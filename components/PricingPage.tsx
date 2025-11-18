@@ -1,6 +1,6 @@
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { getCalApi } from '@calcom/embed-react';
 import ParticleNetwork from './ParticleNetwork';
 import Navbar from './Navbar';
 import Footer from './Footer';
@@ -47,17 +47,26 @@ const PlanCard: React.FC<{ planName: string; description: string; features: stri
             ))}
         </ul>
         
-        <Link 
-            to="/contact" 
+        <button 
+            data-cal-namespace="30min"
+            data-cal-link="shaheel-saha/30min"
+            data-cal-config='{"layout":"month_view"}'
             className={`w-full text-center block mt-auto px-6 py-3 text-base font-bold rounded-lg transition-all duration-300 ${isPopular ? 'text-black bg-gradient-to-r from-[#00FFC2] to-sky-400 hover:opacity-90 shadow-lg shadow-teal-400/30' : 'text-white bg-gray-700 hover:bg-gray-600'}`}
         >
             Schedule a Call
-        </Link>
+        </button>
     </div>
 );
 
 
 const PricingPage: React.FC = () => {
+    React.useEffect(() => {
+        (async function () {
+          const cal = await getCalApi({"namespace":"30min"});
+          cal("ui", {"hideEventTypeDetails":false,"layout":"month_view"});
+        })();
+      }, []);
+
     return (
         <div className="relative bg-[#0D1117] text-gray-200 font-sans overflow-x-hidden">
             <ParticleNetwork />

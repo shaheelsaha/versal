@@ -14,7 +14,8 @@
     "react-router-dom": "^6.24.0",
     "firebase": "^12.5.0",
     "@google/genai": "^0.14.0",
-    "recharts": "^2.12.7"
+    "recharts": "^2.12.7",
+    "@calcom/embed-react": "^1.4.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

@@ -1,9 +1,3 @@
-
-
-
-
-
-
 // FIX: Switched to Firebase compat imports to resolve type errors. This is necessary when using the v8 syntax with the v9+ Firebase SDK.
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';

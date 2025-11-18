@@ -2,6 +2,7 @@
 import * as React from 'react';
 // FIX: Use Firebase v8 compat imports to resolve type errors for `User` and `firestore`.
 import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import { db, storage } from '../firebaseConfig';
 import { Property, PropertyType, PropertyStatus, PropertyPlan } from '../types';

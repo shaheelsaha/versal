@@ -1,5 +1,6 @@
 import * as React from 'react';
 import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import { db } from '../firebaseConfig';
 import { Lead, LeadStatus } from '../types';

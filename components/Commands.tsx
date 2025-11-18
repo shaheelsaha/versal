@@ -3,6 +3,7 @@ import * as React from 'react';
 // FIX: Switched to firebase/compat/app to use v8 syntax with v9 SDK and resolve type errors.
 // FIX: Use Firebase v8 compat import to resolve type error for `User`.
 import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
 import { db } from '../firebaseConfig';
 import { CommandLineIcon } from './icons';
 
