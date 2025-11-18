@@ -305,11 +305,11 @@ export const Connections: React.FC = () => {
     return (
         <div className="container mx-auto p-4 md:p-8">
             <h1 className="text-3xl font-bold text-white">Connections</h1>
-            <p className="mt-1 text-slate-400">Link your accounts to unlock the full power of SAHA AI.</p>
+            <p className="mt-1 text-gray-400">Link your accounts to unlock the full power of SAHA AI.</p>
     
             {loading ? (
                 <div className="flex justify-center items-center h-64">
-                    <SpinnerIcon className="w-12 h-12 animate-spin text-indigo-500" />
+                    <SpinnerIcon className="w-12 h-12 animate-spin text-[#00FFC2]" />
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
@@ -321,7 +321,7 @@ export const Connections: React.FC = () => {
                         return (
                             <div 
                                 key={platform.id} 
-                                className="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                                className="bg-gray-900/50 border border-white/10 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
                             >
                                 <div className="flex items-start justify-between">
                                     <div className={`w-14 h-14 rounded-xl flex items-center justify-center`} style={{ backgroundColor: platform.color }}>
@@ -337,14 +337,14 @@ export const Connections: React.FC = () => {
                                 
                                 <div className="mt-4">
                                     <h3 className="font-bold text-lg text-white">{platform.name}</h3>
-                                    <p className="text-sm text-slate-400 mt-1 h-10">{platform.description}</p>
+                                    <p className="text-sm text-gray-400 mt-1 h-10">{platform.description}</p>
                                 </div>
     
                                 <div className="mt-6 flex items-center space-x-2">
                                     {isConnected ? (
                                         <button 
                                             onClick={() => handleDisconnect(platform.id)} 
-                                            className="w-full py-2.5 px-4 rounded-lg text-sm font-semibold bg-slate-800 text-slate-300 hover:bg-red-500/20 hover:text-red-300 hover:border-red-500/30 border border-slate-700 transition-colors flex items-center justify-center"
+                                            className="w-full py-2.5 px-4 rounded-lg text-sm font-semibold bg-gray-800 text-gray-300 hover:bg-red-500/20 hover:text-red-300 hover:border-red-500/30 border border-gray-700 transition-colors flex items-center justify-center"
                                         >
                                             <TrashIcon className="w-4 h-4 mr-2" />
                                             Disconnect
@@ -353,7 +353,7 @@ export const Connections: React.FC = () => {
                                         <button 
                                             onClick={() => handleConnect(platform.id)} 
                                             disabled={isConnecting}
-                                            className="w-full py-2.5 px-4 rounded-lg text-white text-sm bg-indigo-600 font-semibold hover:bg-indigo-500 transition-all disabled:bg-slate-600 disabled:cursor-wait flex items-center justify-center"
+                                            className="w-full py-2.5 px-4 rounded-lg text-black text-sm bg-[#00FFC2] font-semibold hover:bg-teal-300 transition-all disabled:bg-gray-600 disabled:text-gray-900 disabled:cursor-wait flex items-center justify-center"
                                         >
                                             {isConnecting ? (
                                                 <>

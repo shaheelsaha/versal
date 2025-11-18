@@ -7,13 +7,13 @@ import { EmailIcon, SpinnerIcon, CheckCircleIcon, TwitterIcon, InstagramIcon, Li
 
 const ContactInfoItem: React.FC<{ icon: React.ReactElement; title: string; children: React.ReactNode }> = ({ icon, title, children }) => (
     <div className="flex items-start">
-        <div className="flex-shrink-0 bg-slate-800/50 border border-slate-700 rounded-lg p-3 text-indigo-400">
+        <div className="flex-shrink-0 bg-gray-900/50 border border-white/10 rounded-lg p-3 text-[#00FFC2]">
             {/* FIX: Explicitly provide the type for the props in React.cloneElement to resolve a TypeScript inference issue. */}
             {React.cloneElement<{ className?: string }>(icon, { className: 'w-6 h-6' })}
         </div>
         <div className="ml-4">
             <h4 className="text-lg font-semibold text-white">{title}</h4>
-            <div className="text-slate-400 mt-1">{children}</div>
+            <div className="text-gray-400 mt-1">{children}</div>
         </div>
     </div>
 );
@@ -57,7 +57,7 @@ const ContactPage: React.FC = () => {
     };
     
     return (
-        <div className="relative bg-slate-900 text-slate-200 font-sans overflow-x-hidden">
+        <div className="relative bg-[#0D1117] text-gray-200 font-sans overflow-x-hidden">
             <ParticleNetwork />
             <div className="relative z-10">
                 <Navbar />
@@ -68,18 +68,18 @@ const ContactPage: React.FC = () => {
                                 <h1 className="text-4xl sm:text-5xl font-extrabold text-white mb-4 animate-fade-in-down">
                                     Get In Touch
                                 </h1>
-                                <p className="text-lg text-slate-400 max-w-2xl mx-auto animate-fade-in-up delay-100">
+                                <p className="text-lg text-gray-400 max-w-2xl mx-auto animate-fade-in-up delay-100">
                                     Have a question or want to work together? Drop us a line! We're excited to hear from you.
                                 </p>
                             </div>
                             <div className="grid md:grid-cols-2 gap-12 items-start">
                                 {/* Contact Form */}
-                                <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700 rounded-2xl p-8 animate-fade-in-up">
+                                <div className="bg-gray-900/50 backdrop-blur-xl border border-white/10 rounded-2xl p-8 animate-fade-in-up">
                                     {submissionStatus === 'success' ? (
                                         <div className="flex flex-col items-center justify-center text-center h-full min-h-[400px]">
                                             <CheckCircleIcon className="w-16 h-16 text-green-400 mb-4"/>
                                             <h3 className="text-2xl font-bold text-white mb-2">Message Sent!</h3>
-                                            <p className="text-slate-400">Thanks for reaching out. We'll get back to you as soon as possible.</p>
+                                            <p className="text-gray-400">Thanks for reaching out. We'll get back to you as soon as possible.</p>
                                         </div>
                                     ) : (
                                         <form onSubmit={handleSubmit} className="space-y-6">
@@ -89,7 +89,7 @@ const ContactPage: React.FC = () => {
                                                 </div>
                                             )}
                                             <div>
-                                                <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-2">Name</label>
+                                                <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">Name</label>
                                                 <input
                                                     type="text"
                                                     id="name"
@@ -98,11 +98,11 @@ const ContactPage: React.FC = () => {
                                                     onChange={handleInputChange}
                                                     required
                                                     placeholder="e.g. John Smith"
-                                                    className="w-full bg-slate-800 border border-slate-700 rounded-lg py-3 px-4 text-slate-200 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition duration-300"
+                                                    className="w-full bg-gray-900 border border-white/10 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-[#00FFC2]/50 focus:border-[#00FFC2] outline-none transition duration-300"
                                                 />
                                             </div>
                                             <div>
-                                                <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">Email address</label>
+                                                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">Email address</label>
                                                 <input
                                                     type="email"
                                                     id="email"
@@ -111,11 +111,11 @@ const ContactPage: React.FC = () => {
                                                     onChange={handleInputChange}
                                                     required
                                                     placeholder="e.g. example@gmail.com"
-                                                    className="w-full bg-slate-800 border border-slate-700 rounded-lg py-3 px-4 text-slate-200 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition duration-300"
+                                                    className="w-full bg-gray-900 border border-white/10 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-[#00FFC2]/50 focus:border-[#00FFC2] outline-none transition duration-300"
                                                 />
                                             </div>
                                             <div>
-                                                <label htmlFor="message" className="block text-sm font-medium text-slate-300 mb-2">Message</label>
+                                                <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">Message</label>
                                                 <textarea
                                                     id="message"
                                                     name="message"
@@ -124,14 +124,14 @@ const ContactPage: React.FC = () => {
                                                     onChange={handleInputChange}
                                                     required
                                                     placeholder="Let us know how we can help"
-                                                    className="w-full bg-slate-800 border border-slate-700 rounded-lg py-3 px-4 text-slate-200 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition duration-300"
+                                                    className="w-full bg-gray-900 border border-white/10 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-[#00FFC2]/50 focus:border-[#00FFC2] outline-none transition duration-300"
                                                 ></textarea>
                                             </div>
                                             <div>
                                                 <button
                                                     type="submit"
                                                     disabled={submissionStatus === 'submitting'}
-                                                    className="w-full flex justify-center items-center px-6 py-3 text-base font-bold text-white bg-indigo-600 rounded-lg hover:bg-indigo-500 transition-all duration-300 shadow-lg shadow-indigo-600/30 disabled:bg-slate-600 disabled:text-slate-400 disabled:shadow-none disabled:cursor-not-allowed"
+                                                    className="w-full flex justify-center items-center px-6 py-3 text-base font-bold text-black bg-[#00FFC2] rounded-lg hover:bg-teal-300 transition-all duration-300 shadow-lg shadow-teal-400/30 disabled:bg-gray-600 disabled:text-gray-400 disabled:shadow-none disabled:cursor-not-allowed"
                                                 >
                                                     {submissionStatus === 'submitting' ? (
                                                         <>
@@ -148,23 +148,23 @@ const ContactPage: React.FC = () => {
                                 {/* Contact Information */}
                                 <div className="space-y-8 animate-fade-in-up delay-100 mt-8 md:mt-0">
                                     <ContactInfoItem icon={<EmailIcon />} title="Email Us">
-                                        <a href="mailto:shaheel@sahaai.io" className="hover:text-indigo-400 transition-colors">shaheel@sahaai.io</a>
-                                        <p className="text-sm text-slate-500">General inquiries & support</p>
+                                        <a href="mailto:shaheel@sahaai.io" className="hover:text-[#00FFC2] transition-colors">shaheel@sahaai.io</a>
+                                        <p className="text-sm text-gray-500">General inquiries & support</p>
                                     </ContactInfoItem>
                                      <ContactInfoItem icon={<PhoneIcon />} title="Call Us">
-                                        <a href="tel:+971544575282" className="hover:text-indigo-400 transition-colors">+971 54 457 5282</a>
+                                        <a href="tel:+971544575282" className="hover:text-[#00FFC2] transition-colors">+971 54 457 5282</a>
                                     </ContactInfoItem>
                                     
                                     <div>
                                         <h4 className="text-lg font-semibold text-white mb-4">Follow Us</h4>
                                         <div className="flex space-x-4">
-                                            <a href="#" className="p-3 bg-slate-800/50 border border-slate-700 rounded-full text-slate-400 hover:text-white hover:bg-slate-700 transition-colors">
+                                            <a href="#" className="p-3 bg-gray-900/50 border border-white/10 rounded-full text-gray-400 hover:text-white hover:bg-gray-700 transition-colors">
                                                 <TwitterIcon className="w-5 h-5"/>
                                             </a>
-                                            <a href="#" className="p-3 bg-slate-800/50 border border-slate-700 rounded-full text-slate-400 hover:text-white hover:bg-slate-700 transition-colors">
+                                            <a href="#" className="p-3 bg-gray-900/50 border border-white/10 rounded-full text-gray-400 hover:text-white hover:bg-gray-700 transition-colors">
                                                 <LinkedInIcon className="w-5 h-5"/>
                                             </a>
-                                            <a href="#" className="p-3 bg-slate-800/50 border border-slate-700 rounded-full text-slate-400 hover:text-white hover:bg-slate-700 transition-colors">
+                                            <a href="#" className="p-3 bg-gray-900/50 border border-white/10 rounded-full text-gray-400 hover:text-white hover:bg-gray-700 transition-colors">
                                                 <InstagramIcon className="w-5 h-5"/>
                                             </a>
                                         </div>

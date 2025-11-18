@@ -14,7 +14,7 @@ const ParticleNetwork: React.FC = () => {
         let particles: Particle[] = [];
         const particleCount = 70;
         const maxDistance = 150;
-        const lineColor = '#818cf8'; // indigo-400
+        const lineColor = '#00FFC2'; // teal accent
 
         let mouse = {
             x: -1000,

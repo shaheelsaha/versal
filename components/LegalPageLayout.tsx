@@ -11,50 +11,50 @@ const Logo: React.FC = () => (
 
 const LegalPageLayout: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => {
     return (
-        <div className="bg-slate-900 min-h-screen font-sans text-slate-300">
+        <div className="bg-[#0D1117] min-h-screen font-sans text-gray-300">
             <style>{`
                 .legal-content h2 {
                     font-size: 1.5rem;
                     font-weight: 600;
                     margin-top: 2rem;
                     margin-bottom: 1rem;
-                    border-bottom: 1px solid #334155; /* slate-700 */
+                    border-bottom: 1px solid #374151; /* gray-700 */
                     padding-bottom: 0.5rem;
-                    color: #f1f5f9; /* slate-100 */
+                    color: #f3f4f6; /* gray-100 */
                 }
                 .legal-content p {
                     line-height: 1.75;
                     margin-bottom: 1.25rem;
-                    color: #94a3b8; /* slate-400 */
+                    color: #9ca3af; /* gray-400 */
                 }
                 .legal-content ul {
                     list-style-type: disc;
                     padding-left: 2rem;
                     margin-bottom: 1.25rem;
-                    color: #94a3b8; /* slate-400 */
+                    color: #9ca3af; /* gray-400 */
                 }
                  .legal-content li {
                     margin-bottom: 0.5rem;
                 }
                 .legal-content a {
-                    color: #818cf8; /* indigo-400 */
+                    color: #00FFC2; /* teal-400 */
                 }
                 .legal-content a:hover {
                     text-decoration: underline;
                 }
             `}</style>
-            <header className="bg-slate-900/70 backdrop-blur-lg border-b border-slate-800 sticky top-0 z-30">
+            <header className="bg-[#0D1117]/70 backdrop-blur-lg border-b border-white/10 sticky top-0 z-30">
                 <div className="container mx-auto flex justify-between items-center p-4">
                     <a href="/"><Logo /></a>
-                    <a href="/" className="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-500 transition-colors">
+                    <a href="/" className="px-4 py-2 text-sm font-semibold text-black bg-[#00FFC2] rounded-lg hover:bg-teal-300 transition-colors">
                         Back to Home
                     </a>
                 </div>
             </header>
             <main className="container mx-auto p-4 md:p-8">
-                <div className="max-w-4xl mx-auto bg-slate-800/50 p-8 sm:p-12 rounded-2xl border border-slate-700">
+                <div className="max-w-4xl mx-auto bg-gray-900/50 p-8 sm:p-12 rounded-2xl border border-white/10">
                     <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-white">{title}</h1>
-                    <p className="text-sm text-slate-500 mb-8">Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                    <p className="text-sm text-gray-500 mb-8">Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
                     <div className="legal-content">
                         {children}
                     </div>

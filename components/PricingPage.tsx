@@ -7,10 +7,10 @@ import { UserIcon, SparklesIcon } from './icons';
 
 const FeatureListItem: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <li className="flex items-start">
-        <div className="flex-shrink-0 bg-slate-800 rounded-full p-1 mr-3 mt-1">
-            <UserIcon className="w-4 h-4 text-indigo-400" />
+        <div className="flex-shrink-0 bg-gray-800 rounded-full p-1 mr-3 mt-1">
+            <UserIcon className="w-4 h-4 text-[#00FFC2]" />
         </div>
-        <span className="text-slate-400">{children}</span>
+        <span className="text-gray-400">{children}</span>
     </li>
 );
 
@@ -25,33 +25,33 @@ const PricingCard: React.FC<{
 }> = ({ planName, price, priceDetails, description, isPopular, buttonText, buttonLink }) => {
     
     const cardClasses = isPopular
-        ? "bg-gradient-to-br from-indigo-900/50 via-slate-800/50 to-slate-800/50 border-2 border-indigo-500"
-        : "bg-slate-800/50 backdrop-blur-xl border border-slate-700";
+        ? "bg-gradient-to-br from-teal-900/30 via-gray-900/50 to-gray-900/50 border-2 border-[#00FFC2]"
+        : "bg-gray-900/50 backdrop-blur-xl border border-white/10";
     
     const buttonClasses = isPopular
-        ? "w-full block text-center px-8 py-3 text-base font-bold text-white bg-indigo-600 rounded-lg hover:bg-indigo-500 transition-transform hover:scale-105 duration-300 shadow-lg shadow-indigo-600/30"
-        : "w-full block text-center px-8 py-3 text-base font-bold text-white bg-slate-700/50 border-2 border-slate-700 rounded-lg hover:bg-slate-700 transition-colors duration-300";
+        ? "w-full block text-center px-8 py-3 text-base font-bold text-black bg-[#00FFC2] rounded-lg hover:bg-teal-300 transition-transform hover:scale-105 duration-300 shadow-lg shadow-teal-400/30"
+        : "w-full block text-center px-8 py-3 text-base font-bold text-white bg-gray-700/50 border-2 border-gray-700 rounded-lg hover:bg-gray-700 transition-colors duration-300";
 
     return (
         <div className={`relative rounded-2xl p-8 ${cardClasses}`}>
             {isPopular && (
-                <div className="absolute top-0 right-8 -translate-y-1/2 bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white text-xs font-bold px-4 py-1.5 rounded-full">
+                <div className="absolute top-0 right-8 -translate-y-1/2 bg-gradient-to-r from-teal-400 to-sky-500 text-white text-xs font-bold px-4 py-1.5 rounded-full">
                     Most Popular
                 </div>
             )}
 
-            <div className="bg-slate-800 rounded-lg w-12 h-12 flex items-center justify-center mb-5">
-                 <SparklesIcon className="w-6 h-6 text-indigo-400" />
+            <div className="bg-gray-800 rounded-lg w-12 h-12 flex items-center justify-center mb-5">
+                 <SparklesIcon className="w-6 h-6 text-[#00FFC2]" />
             </div>
             
             <h3 className="text-2xl font-bold text-white">{planName}</h3>
             
             <div className="my-6">
                 <span className="text-5xl font-extrabold text-white">{price}</span>
-                <span className="text-slate-400 font-medium ml-2">{priceDetails}</span>
+                <span className="text-gray-400 font-medium ml-2">{priceDetails}</span>
             </div>
             
-            <p className="text-slate-400 mb-8 h-10">{description}</p>
+            <p className="text-gray-400 mb-8 h-10">{description}</p>
             
             <a href={buttonLink} className={buttonClasses}>
                 {buttonText}
@@ -79,7 +79,7 @@ const PricingPage: React.FC = () => {
     ];
 
     return (
-        <div className="relative bg-slate-900 text-slate-200 font-sans overflow-x-hidden">
+        <div className="relative bg-[#0D1117] text-gray-200 font-sans overflow-x-hidden">
             <ParticleNetwork />
             <div className="relative z-10">
                 <Navbar />
@@ -89,7 +89,7 @@ const PricingPage: React.FC = () => {
                             <h1 className="text-4xl sm:text-5xl font-extrabold text-white mb-4 animate-fade-in-down">
                                 Plans & Pricing
                             </h1>
-                            <p className="text-lg text-slate-400 max-w-2xl mx-auto animate-fade-in-up delay-100">
+                            <p className="text-lg text-gray-400 max-w-2xl mx-auto animate-fade-in-up delay-100">
                                 Start for free, upgrade for powerful automation. Choose the plan that fits your needs.
                             </p>
                         </div>

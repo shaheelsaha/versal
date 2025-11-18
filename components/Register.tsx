@@ -72,22 +72,22 @@ const Register: React.FC<RegisterProps> = () => {
     };
     
     return (
-        <div className="relative flex flex-col items-center justify-center min-h-screen bg-slate-900 text-slate-200 p-4 font-sans overflow-hidden">
+        <div className="relative flex flex-col items-center justify-center min-h-screen bg-[#0D1117] text-gray-200 p-4 font-sans overflow-hidden">
              <ParticleNetwork />
              <div className="relative z-10 w-full flex flex-col items-center">
                 <div className="text-center mb-10">
                     <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
-                        Create Your <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">SAHA AI</span> Account
+                        Create Your <span className="bg-gradient-to-r from-[#00FFC2] to-sky-400 bg-clip-text text-transparent">SAHA AI</span> Account
                     </h1>
-                    <p className="text-slate-400 mt-4 max-w-md mx-auto">
+                    <p className="text-gray-400 mt-4 max-w-md mx-auto">
                         Join us and unlock the future of social media management.
                     </p>
                 </div>
 
-                <div className="w-full max-w-md p-6 sm:p-8 space-y-6 bg-slate-800/50 backdrop-blur-xl border border-slate-700 rounded-3xl shadow-2xl shadow-black/30">
+                <div className="w-full max-w-md p-6 sm:p-8 space-y-6 bg-gray-900/50 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl shadow-black/30">
                      <div className="text-center">
                         <h2 className="text-2xl font-bold text-white">Sign Up</h2>
-                        <p className="text-slate-400 text-sm mt-1">It's quick and easy</p>
+                        <p className="text-gray-400 text-sm mt-1">It's quick and easy</p>
                     </div>
 
                     {error && <p className="text-red-400 text-sm text-center bg-red-500/20 p-3 rounded-lg border border-red-500/30">{error}</p>}
@@ -107,38 +107,38 @@ const Register: React.FC<RegisterProps> = () => {
                     </button>
 
                      <div className="relative flex items-center py-2">
-                        <div className="flex-grow border-t border-slate-700"></div>
-                        <span className="flex-shrink mx-4 text-xs text-slate-400 uppercase">Or continue with</span>
-                        <div className="flex-grow border-t border-slate-700"></div>
+                        <div className="flex-grow border-t border-gray-700"></div>
+                        <span className="flex-shrink mx-4 text-xs text-gray-400 uppercase">Or continue with</span>
+                        <div className="flex-grow border-t border-gray-700"></div>
                     </div>
 
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         <div>
-                            <label htmlFor="name" className="text-sm font-medium text-slate-300 sr-only">Full Name</label>
+                            <label htmlFor="name" className="text-sm font-medium text-gray-300 sr-only">Full Name</label>
                             <div className="relative">
-                                <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
+                                <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                                 <input id="name" name="name" type="text" autoComplete="name" required
                                 value={fullName}
                                 onChange={(e) => setFullName(e.target.value)}
-                                className="pl-12 w-full bg-slate-800 border border-slate-700 rounded-lg py-3 px-4 text-slate-200 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition duration-300"
+                                className="pl-12 w-full bg-gray-900 border border-white/10 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-[#00FFC2]/50 focus:border-[#00FFC2] outline-none transition duration-300"
                                 placeholder="Enter your full name" />
                             </div>
                         </div>
                         <div>
-                            <label htmlFor="email" className="text-sm font-medium text-slate-300 sr-only">Email</label>
+                            <label htmlFor="email" className="text-sm font-medium text-gray-300 sr-only">Email</label>
                             <div className="relative">
-                                <EmailIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
+                                <EmailIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                                 <input id="email" name="email" type="email" autoComplete="email" required 
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="pl-12 w-full bg-slate-800 border border-slate-700 rounded-lg py-3 px-4 text-slate-200 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition duration-300"
+                                className="pl-12 w-full bg-gray-900 border border-white/10 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-[#00FFC2]/50 focus:border-[#00FFC2] outline-none transition duration-300"
                                 placeholder="Enter your email" />
                             </div>
                         </div>
                         <div>
-                            <label htmlFor="password" className="text-sm font-medium text-slate-300 sr-only">Password</label>
+                            <label htmlFor="password" className="text-sm font-medium text-gray-300 sr-only">Password</label>
                             <div className="relative">
-                                <LockIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
+                                <LockIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                                 <input
                                     id="password"
                                     name="password"
@@ -147,16 +147,16 @@ const Register: React.FC<RegisterProps> = () => {
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="pl-12 pr-12 w-full bg-slate-800 border border-slate-700 rounded-lg py-3 px-4 text-slate-200 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition duration-300"
+                                    className="pl-12 pr-12 w-full bg-gray-900 border border-white/10 rounded-lg py-3 px-4 text-gray-200 focus:ring-2 focus:ring-[#00FFC2]/50 focus:border-[#00FFC2] outline-none transition duration-300"
                                     placeholder="Create a password (min. 6 characters)"
                                 />
-                                <button type="button" onClick={() => setPasswordVisible(!passwordVisible)} className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 hover:text-indigo-400 transition-colors">
+                                <button type="button" onClick={() => setPasswordVisible(!passwordVisible)} className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 hover:text-[#00FFC2] transition-colors">
                                     {passwordVisible ? <EyeOffIcon /> : <EyeIcon />}
                                 </button>
                             </div>
                         </div>
                         <div>
-                            <button type="submit" disabled={loading || googleLoading} className="w-full mt-2 py-3 px-4 rounded-lg text-white bg-indigo-600 font-bold text-base hover:bg-indigo-500 transition-all duration-300 shadow-lg shadow-indigo-600/30 disabled:bg-slate-600 disabled:text-slate-400 disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center">
+                            <button type="submit" disabled={loading || googleLoading} className="w-full mt-2 py-3 px-4 rounded-lg text-black bg-[#00FFC2] font-bold text-base hover:bg-teal-300 transition-all duration-300 shadow-lg shadow-teal-400/30 disabled:bg-gray-600 disabled:text-gray-400 disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center">
                                 {loading ? (
                                     <>
                                         <svg className="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -169,14 +169,14 @@ const Register: React.FC<RegisterProps> = () => {
                             </button>
                         </div>
                     </form>
-                    <p className="text-sm text-center text-slate-400">
+                    <p className="text-sm text-center text-gray-400">
                         Already have an account?{' '}
-                        <Link to="/login" className="font-semibold text-indigo-400 hover:underline">
+                        <Link to="/login" className="font-semibold text-[#00FFC2] hover:underline">
                             Sign In
                         </Link>
                     </p>
                 </div>
-                <p className="text-center text-xs text-slate-500 mt-12">
+                <p className="text-center text-xs text-gray-500 mt-12">
                     Copyright © 2025 SAHA AI. All Rights Reserved.
                 </p>
             </div>

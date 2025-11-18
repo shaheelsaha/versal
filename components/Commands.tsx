@@ -221,7 +221,7 @@ const Commands: React.FC<CommandsProps> = ({ user }) => {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-full p-8">
-                <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-indigo-500"></div>
+                <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#00FFC2]"></div>
             </div>
         );
     }
@@ -229,12 +229,12 @@ const Commands: React.FC<CommandsProps> = ({ user }) => {
     return (
         <div className="container mx-auto p-4 md:p-8">
             <h1 className="text-3xl font-bold mb-2 text-white">Commands</h1>
-            <p className="text-slate-400 mb-6">Create and manage a custom command prompt for AI-powered actions. This command will be used for auto-commenting.</p>
+            <p className="text-gray-400 mb-6">Create and manage a custom command prompt for AI-powered actions. This command will be used for auto-commenting.</p>
             
             <div className="max-w-4xl mx-auto">
-                <form onSubmit={handleSave} className="bg-slate-900 border border-slate-800 rounded-2xl p-8 space-y-6">
+                <form onSubmit={handleSave} className="bg-gray-900/50 border border-white/10 rounded-2xl p-8 space-y-6">
                      <div>
-                        <label htmlFor="systemPrompt" className="block text-sm font-medium text-slate-300 mb-1">
+                        <label htmlFor="systemPrompt" className="block text-sm font-medium text-gray-300 mb-1">
                             System Prompt
                         </label>
                         <textarea 
@@ -244,13 +244,13 @@ const Commands: React.FC<CommandsProps> = ({ user }) => {
                             value={systemPrompt} 
                             onChange={(e) => setSystemPrompt(e.target.value)}
                             placeholder="Describe the task and personality for the AI..."
-                            className="w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition font-mono text-xs leading-relaxed"
+                            className="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 focus:ring-2 focus:ring-[#00FFC2]/50 focus:border-[#00FFC2] outline-none transition font-mono text-xs leading-relaxed"
                         />
-                        <p className="text-xs text-slate-500 mt-1">This is the main instruction for the AI. You can edit or replace this default prompt.</p>
+                        <p className="text-xs text-gray-500 mt-1">This is the main instruction for the AI. You can edit or replace this default prompt.</p>
                     </div>
 
-                    <div className="flex justify-end pt-4 border-t border-slate-800">
-                        <button type="submit" disabled={saving} className="px-6 py-2 rounded-lg text-white bg-indigo-600 font-bold text-sm hover:bg-indigo-500 transition-all shadow-md shadow-indigo-500/20 disabled:bg-slate-600 disabled:shadow-none disabled:cursor-not-allowed">
+                    <div className="flex justify-end pt-4 border-t border-white/10">
+                        <button type="submit" disabled={saving} className="px-6 py-2 rounded-lg text-black bg-[#00FFC2] font-bold text-sm hover:bg-teal-300 transition-all shadow-md shadow-teal-500/20 disabled:bg-gray-600 disabled:text-black disabled:shadow-none disabled:cursor-not-allowed">
                             {saving ? 'Saving...' : 'Save Command'}
                         </button>
                     </div>
