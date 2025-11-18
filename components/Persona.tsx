@@ -1,9 +1,3 @@
-
-
-
-
-
-
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
 // FIX: Switched to firebase/compat/app to use v8 syntax with v9 SDK and resolve type errors.
@@ -95,21 +89,21 @@ const Persona: React.FC<PersonaProps> = ({ user }) => {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-full p-8">
-                <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
         );
     }
 
     return (
         <div className="container mx-auto p-4 md:p-8">
-            <h1 className="text-3xl font-bold mb-2 text-gray-900">AI Persona</h1>
-            <p className="text-gray-500 mb-6">Define the voice and tone for your AI-generated content to ensure brand consistency.</p>
+            <h1 className="text-3xl font-bold mb-2 text-white">AI Persona</h1>
+            <p className="text-slate-400 mb-6">Define the voice and tone for your AI-generated content to ensure brand consistency.</p>
             
             <div className="max-w-3xl mx-auto">
-                <form onSubmit={handleSave} className="bg-white border border-gray-200 rounded-2xl p-8 space-y-6">
+                <form onSubmit={handleSave} className="bg-slate-900 border border-slate-800 rounded-2xl p-8 space-y-6">
                     <div>
-                        <label htmlFor="name" className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                            <EditIcon className="w-4 h-4 mr-2 text-gray-400" />
+                        <label htmlFor="name" className="flex items-center text-sm font-medium text-slate-300 mb-1">
+                            <EditIcon className="w-4 h-4 mr-2 text-slate-400" />
                             Persona Name
                         </label>
                         <input 
@@ -119,14 +113,14 @@ const Persona: React.FC<PersonaProps> = ({ user }) => {
                             value={persona.name} 
                             onChange={handleChange} 
                             placeholder="e.g., Friendly & Witty Marketer"
-                            className="w-full px-3 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition"
+                            className="w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition"
                         />
-                         <p className="text-xs text-gray-500 mt-1">Give your persona a memorable name.</p>
+                         <p className="text-xs text-slate-500 mt-1">Give your persona a memorable name.</p>
                     </div>
 
                      <div>
-                        <label htmlFor="characteristics" className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                            <InfoIcon className="w-4 h-4 mr-2 text-gray-400" />
+                        <label htmlFor="characteristics" className="flex items-center text-sm font-medium text-slate-300 mb-1">
+                            <InfoIcon className="w-4 h-4 mr-2 text-slate-400" />
                             Core Characteristics & Instructions
                         </label>
                         <textarea 
@@ -136,14 +130,14 @@ const Persona: React.FC<PersonaProps> = ({ user }) => {
                             value={persona.characteristics} 
                             onChange={handleChange}
                             placeholder="Describe your brand voice. e.g., 'You are a helpful assistant for a coffee brand. Your tone is warm, inviting, and slightly playful. You love using coffee-related puns. Always end with a question to drive engagement.'"
-                            className="w-full px-3 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition"
+                            className="w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition"
                         />
-                        <p className="text-xs text-gray-500 mt-1">This is the main instruction for the AI. Be descriptive about the desired tone, style, and personality.</p>
+                        <p className="text-xs text-slate-500 mt-1">This is the main instruction for the AI. Be descriptive about the desired tone, style, and personality.</p>
                     </div>
 
                      <div>
-                        <label htmlFor="avoid" className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                            <ProhibitIcon className="w-4 h-4 mr-2 text-gray-400" />
+                        <label htmlFor="avoid" className="flex items-center text-sm font-medium text-slate-300 mb-1">
+                            <ProhibitIcon className="w-4 h-4 mr-2 text-slate-400" />
                             Topics or Words to Avoid
                         </label>
                         <textarea 
@@ -153,19 +147,19 @@ const Persona: React.FC<PersonaProps> = ({ user }) => {
                             value={persona.avoid} 
                             onChange={handleChange}
                             placeholder="e.g., 'Do not use corporate jargon like 'synergy'. Avoid mentioning competitors by name. Don't use more than 2 emojis per post.'"
-                            className="w-full px-3 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition"
+                            className="w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition"
                         />
-                         <p className="text-xs text-gray-500 mt-1">Provide negative constraints to guide the AI on what not to do.</p>
+                         <p className="text-xs text-slate-500 mt-1">Provide negative constraints to guide the AI on what not to do.</p>
                     </div>
 
-                    <div className="flex justify-end pt-4 border-t border-gray-200">
-                        <button type="submit" disabled={saving} className="px-6 py-2 rounded-lg text-white bg-blue-600 font-bold text-sm hover:bg-blue-700 transition-all shadow-md shadow-blue-500/20 disabled:bg-gray-400 disabled:shadow-none disabled:cursor-not-allowed">
+                    <div className="flex justify-end pt-4 border-t border-slate-800">
+                        <button type="submit" disabled={saving} className="px-6 py-2 rounded-lg text-white bg-indigo-600 font-bold text-sm hover:bg-indigo-500 transition-all shadow-md shadow-indigo-500/20 disabled:bg-slate-600 disabled:shadow-none disabled:cursor-not-allowed">
                             {saving ? 'Saving...' : 'Save Persona'}
                         </button>
                     </div>
 
                     {message && (
-                        <div className={`mt-4 p-4 border rounded-md text-sm ${message.type === 'success' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
+                        <div className={`mt-4 p-4 border rounded-md text-sm ${message.type === 'success' ? 'bg-green-900/50 text-green-300 border-green-800' : 'bg-red-900/50 text-red-300 border-red-800'}`}>
                            {message.text}
                         </div>
                     )}
