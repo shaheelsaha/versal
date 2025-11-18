@@ -1,4 +1,5 @@
 
+
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
 import { NavLink as RouterNavLink } from 'react-router-dom';
@@ -59,7 +60,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onLinkClick, isOpen, toggle, isCollap
                     </button>
                 </div>
 
-                <nav className="flex-1 space-y-2">
+                <nav className="flex-1 space-y-2 overflow-y-auto pb-4">
                     <p className={`text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ${isCollapsed ? 'text-center' : 'px-4'}`}>
                         <span className={isCollapsed ? 'sr-only' : 'inline'}>Menu</span>
                     </p>
@@ -79,7 +80,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onLinkClick, isOpen, toggle, isCollap
                     </div>
                 </nav>
 
-                <div className="flex flex-col space-y-2">
+                <div className="flex flex-col space-y-2 mt-4 flex-shrink-0">
                     {isCollapsed ? (
                         <button className="w-10 h-10 mx-auto flex items-center justify-center bg-teal-600/50 hover:bg-teal-600 rounded-full text-white transition-colors" title="Upgrade to Pro">
                             <SparklesIcon className="w-5 h-5"/>
