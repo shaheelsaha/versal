@@ -498,7 +498,7 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                                          <InfoIcon className="w-4 h-4 text-gray-500 ml-1" title="Post will be published within the next minute."/>
                                     </label>
                                 </div>
-                                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${publishMode === 'schedule' ? 'max-h-40 opacity-100 mt-2' : 'max-h-0 opacity-0'}`}>
+                                <div className={`transition-all duration-300 ease-in-out ${publishMode === 'schedule' ? 'max-h-96 opacity-100 mt-2 overflow-visible' : 'max-h-0 opacity-0 overflow-hidden'}`}>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                                         <div className="relative" ref={calendarRef}>
                                             <label className="sr-only">Date</label>
