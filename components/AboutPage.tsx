@@ -1,9 +1,19 @@
+
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import { getCalApi } from '@calcom/embed-react';
+import { CalendarIcon } from './icons';
 
 const AboutPage: React.FC = () => {
+    React.useEffect(() => {
+        (async function () {
+            const cal = await getCalApi({"namespace":"30min"});
+            cal("ui", {"hideEventTypeDetails":false,"layout":"month_view"});
+        })();
+    }, []);
+
     return (
         <div className="relative min-h-screen bg-[#0D1117] text-white font-sans overflow-x-hidden selection:bg-[#00FFC2] selection:text-black">
             {/* Soft Gradient Background */}
@@ -38,6 +48,18 @@ const AboutPage: React.FC = () => {
                                     <p>
                                         My work is driven by one goal: using AI to remove manual workloads so people can focus on what truly matters. SAHA AI automates social media, conversations, leads, CRM updates, and customer engagement—giving teams the freedom to grow faster without extra effort.
                                     </p>
+                                    
+                                    <div className="pt-4">
+                                        <button 
+                                            data-cal-namespace="30min"
+                                            data-cal-link="shaheel-saha/30min"
+                                            data-cal-config='{"layout":"month_view"}'
+                                            className="inline-flex items-center px-8 py-4 text-base font-bold text-black bg-[#00FFC2] rounded-lg hover:bg-teal-300 transition-transform hover:scale-105 duration-300 shadow-[0_0_20px_theme(colors.teal.400/40%)]"
+                                        >
+                                            <CalendarIcon className="w-5 h-5 mr-2" />
+                                            Schedule a Call with Me
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 
