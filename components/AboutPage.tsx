@@ -2,10 +2,12 @@
 import * as React from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import ParticleNetwork from './ParticleNetwork';
 
 const AboutPage: React.FC = () => {
     return (
         <div className="relative min-h-screen bg-[#0D1117] text-white font-sans overflow-x-hidden selection:bg-[#00FFC2] selection:text-black">
+            <ParticleNetwork />
             {/* Soft Gradient Background */}
             <div className="fixed inset-0 z-0 pointer-events-none">
                  <div className="absolute top-0 right-0 w-[50vw] h-[50vw] bg-[#00FFC2]/5 rounded-full blur-[120px] transform translate-x-1/3 -translate-y-1/4" />
