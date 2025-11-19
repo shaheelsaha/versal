@@ -4,6 +4,7 @@ import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, UploadIcon, XIcon, Twi
 import { Post, SocialPlatform } from '../types';
 import { db, storage, auth } from '../firebaseConfig';
 import firebase from '../firebaseConfig'; // Import from local config to avoid runtime failure
+import { Calendar } from './Calendar';
 
 // Helper to convert file to base64
 const fileToGenerativePart = async (file: File) => {
@@ -171,6 +172,8 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
     const [autoCommenting, setAutoCommenting] = React.useState(false);
     const [isContentTypeLocked, setIsContentTypeLocked] = React.useState(false);
     const [errors, setErrors] = React.useState<{ platform?: string; caption?: string; schedule?: string }>({});
+    const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
+    const calendarRef = React.useRef<HTMLDivElement>(null);
 
     const isPublished = initialData?.status === 'published';
 
@@ -183,6 +186,20 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
         };
     }, [mediaPreview]);
 
+    React.useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (calendarRef.current && !calendarRef.current.contains(event.target as Node)) {
+                setIsCalendarOpen(false);
+            }
+        };
+        if (isCalendarOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isCalendarOpen]);
+
     const resetForm = React.useCallback((baseDate: Date) => {
         setMediaFile(null);
         setMediaPreview(null);
@@ -194,6 +211,7 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
         setAutoCommenting(false);
         setIsContentTypeLocked(false);
         setErrors({});
+        setIsCalendarOpen(false);
     }, []);
     
     React.useEffect(() => {
@@ -482,25 +500,33 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                                 </div>
                                 <div className={`transition-all duration-300 ease-in-out overflow-hidden ${publishMode === 'schedule' ? 'max-h-40 opacity-100 mt-2' : 'max-h-0 opacity-0'}`}>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                                        <div className="relative">
-                                            <label htmlFor="schedule-date" className="sr-only">Date</label>
-                                            <div className="relative">
-                                                <CalendarIcon className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                                                <input
-                                                    type="date"
-                                                    id="schedule-date"
-                                                    value={scheduledAt.toISOString().split('T')[0]}
-                                                    onChange={(e) => {
-                                                        if (!e.target.value) return;
-                                                        const [year, month, day] = e.target.value.split('-').map(Number);
-                                                        const newDate = new Date(scheduledAt);
-                                                        newDate.setFullYear(year, month - 1, day);
-                                                        setScheduledAt(newDate);
-                                                    }}
-                                                    disabled={isPublished}
-                                                    className="pl-10 pr-3 py-2.5 w-full bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00FFC2]/50 focus:border-[#00FFC2] sm:text-sm disabled:cursor-not-allowed"
-                                                />
+                                        <div className="relative" ref={calendarRef}>
+                                            <label className="sr-only">Date</label>
+                                            <div 
+                                                onClick={() => !isPublished && setIsCalendarOpen(!isCalendarOpen)}
+                                                className={`flex items-center justify-between w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 cursor-pointer ${isPublished ? 'opacity-60 cursor-not-allowed' : 'hover:border-gray-600 focus:ring-2 focus:ring-[#00FFC2]/50 focus:border-[#00FFC2]'}`}
+                                            >
+                                                <div className="flex items-center text-gray-200 text-sm">
+                                                     <CalendarIcon className="w-5 h-5 text-gray-400 mr-3" />
+                                                     {scheduledAt.toLocaleDateString('en-GB')}
+                                                </div>
                                             </div>
+                                            
+                                            {isCalendarOpen && (
+                                                <div className="absolute top-full left-0 mt-2 z-50">
+                                                    <Calendar 
+                                                        selectedDate={scheduledAt} 
+                                                        onChange={(d) => {
+                                                            // preserve time
+                                                            const newDate = new Date(d);
+                                                            newDate.setHours(scheduledAt.getHours(), scheduledAt.getMinutes());
+                                                            setScheduledAt(newDate);
+                                                            setIsCalendarOpen(false);
+                                                        }}
+                                                        onClose={() => setIsCalendarOpen(false)}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                         <TimePicker
                                             selectedTime={scheduledAt}
