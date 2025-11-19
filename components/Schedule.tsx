@@ -1,5 +1,6 @@
 
 import * as React from 'react';
+import { createPortal } from 'react-dom';
 import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, UploadIcon, XIcon, TwitterIcon, LinkedInIcon, DribbbleIcon, FileIcon, InstagramIcon, FacebookIcon, TikTokIcon, ThreadsIcon, YouTubeIcon, PlayIcon, EditIcon, TrashIcon, SparklesIcon, CheckCircleIcon, AlertTriangleIcon, PlusIcon, InfoIcon, PinterestIcon } from './icons';
 import { Post, SocialPlatform } from '../types';
 import { db, storage, auth } from '../firebaseConfig';
@@ -172,8 +173,12 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
     const [autoCommenting, setAutoCommenting] = React.useState(false);
     const [isContentTypeLocked, setIsContentTypeLocked] = React.useState(false);
     const [errors, setErrors] = React.useState<{ platform?: string; caption?: string; schedule?: string }>({});
+    
+    // Calendar State
     const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
+    const [calendarPos, setCalendarPos] = React.useState<{ top: number; left: number } | null>(null);
     const calendarRef = React.useRef<HTMLDivElement>(null);
+    const popupRef = React.useRef<HTMLDivElement>(null);
 
     const isPublished = initialData?.status === 'published';
 
@@ -186,19 +191,30 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
         };
     }, [mediaPreview]);
 
+    // Handle click outside for calendar
     React.useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (calendarRef.current && !calendarRef.current.contains(event.target as Node)) {
+            const target = event.target as Node;
+            const isInsideInput = calendarRef.current && calendarRef.current.contains(target);
+            const isInsidePopup = popupRef.current && popupRef.current.contains(target);
+
+            if (!isInsideInput && !isInsidePopup) {
                 setIsCalendarOpen(false);
             }
         };
+
         if (isCalendarOpen) {
             document.addEventListener('mousedown', handleClickOutside);
+            window.addEventListener('resize', () => setIsCalendarOpen(false));
+            window.addEventListener('scroll', () => setIsCalendarOpen(false), true);
         }
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
+            window.removeEventListener('resize', () => setIsCalendarOpen(false));
+            window.removeEventListener('scroll', () => setIsCalendarOpen(false), true);
         };
     }, [isCalendarOpen]);
+
 
     const resetForm = React.useCallback((baseDate: Date) => {
         setMediaFile(null);
@@ -340,6 +356,34 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
             autoCommenting,
             contentType,
         }, newMediaToUpload, keptExistingUrls);
+    }
+
+    const toggleCalendar = (e: React.MouseEvent) => {
+        if (isPublished) return;
+        if (isCalendarOpen) {
+            setIsCalendarOpen(false);
+        } else {
+            const rect = e.currentTarget.getBoundingClientRect();
+            // Position at bottom left of trigger, but allow for some margin
+            // Check if it goes off screen
+            let top = rect.bottom + 8;
+            let left = rect.left;
+            
+            const calendarHeight = 360; // approx
+            const calendarWidth = 300; // approx
+            
+            if (top + calendarHeight > window.innerHeight) {
+                // flip up
+                top = rect.top - calendarHeight - 8;
+            }
+            
+            if (left + calendarWidth > window.innerWidth) {
+                 left = window.innerWidth - calendarWidth - 20;
+            }
+
+            setCalendarPos({ top, left });
+            setIsCalendarOpen(true);
+        }
     }
 
     return (
@@ -503,7 +547,7 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                                         <div className="relative" ref={calendarRef}>
                                             <label className="sr-only">Date</label>
                                             <div 
-                                                onClick={() => !isPublished && setIsCalendarOpen(!isCalendarOpen)}
+                                                onClick={toggleCalendar}
                                                 className={`flex items-center justify-between w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 cursor-pointer ${isPublished ? 'opacity-60 cursor-not-allowed' : 'hover:border-gray-600 focus:ring-2 focus:ring-[#00FFC2]/50 focus:border-[#00FFC2]'}`}
                                             >
                                                 <div className="flex items-center text-gray-200 text-sm">
@@ -512,8 +556,17 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                                                 </div>
                                             </div>
                                             
-                                            {isCalendarOpen && (
-                                                <div className="absolute top-full left-0 mt-2 z-50">
+                                            {isCalendarOpen && calendarPos && createPortal(
+                                                <div 
+                                                    ref={popupRef}
+                                                    style={{ 
+                                                        position: 'fixed', 
+                                                        top: calendarPos.top, 
+                                                        left: calendarPos.left, 
+                                                        zIndex: 9999 
+                                                    }}
+                                                    className="animate-fade-in z-[9999]"
+                                                >
                                                     <Calendar 
                                                         selectedDate={scheduledAt} 
                                                         onChange={(d) => {
@@ -525,7 +578,8 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                                                         }}
                                                         onClose={() => setIsCalendarOpen(false)}
                                                     />
-                                                </div>
+                                                </div>,
+                                                document.body
                                             )}
                                         </div>
                                         <TimePicker

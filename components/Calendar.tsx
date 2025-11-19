@@ -120,7 +120,7 @@ export const Calendar: React.FC<CalendarProps> = ({ selectedDate, onChange, onCl
                             className={`
                                 h-8 w-8 rounded-md text-xs font-medium flex items-center justify-center transition-all duration-200
                                 ${selected 
-                                    ? 'bg-blue-600 text-white shadow-md font-bold' // Matching the blue selection from screenshot 
+                                    ? 'bg-blue-600 text-white shadow-md font-bold'
                                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                                 }
                                 ${!selected && today ? 'text-blue-500 font-semibold' : ''}
