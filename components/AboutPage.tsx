@@ -3,9 +3,6 @@ import * as React from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 
-// ✅ Import your local image
-import mypic from '../assets/mypic.jpg';
-
 const AboutPage: React.FC = () => {
     return (
         <div className="relative min-h-screen bg-[#0D1117] text-white font-sans overflow-x-hidden selection:bg-[#00FFC2] selection:text-black">
@@ -49,9 +46,9 @@ const AboutPage: React.FC = () => {
                                 <div className="relative w-full max-w-md lg:max-w-full aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border border-white/5 group">
                                     <div className="absolute inset-0 bg-gradient-to-tr from-[#00FFC2]/10 to-purple-500/10 mix-blend-overlay z-20 pointer-events-none"></div>
                                     
-                                    {/* Founder Image - Updated */}
+                                    {/* Founder Image - Using Your Cloudinary URL */}
                                     <img 
-                                        src={mypic}
+                                        src="https://res.cloudinary.com/ddeaazrgb/image/upload/v1763548227/mypic.jpg"
                                         alt="Shaheel Ahamed"
                                         className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-700 ease-out"
                                     />
