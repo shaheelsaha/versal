@@ -1,8 +1,6 @@
-// FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
+
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-// FIX: Refactor Firebase calls to v8 compat syntax.
-// import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, googleProvider } from '../firebaseConfig';
 import { EmailIcon, LockIcon, EyeIcon, EyeOffIcon, GoogleIcon, XIcon } from './icons';
 import ParticleNetwork from './ParticleNetwork';
@@ -28,7 +26,6 @@ const Login: React.FC<LoginProps> = () => {
         setError(null);
         setLoading(true);
         try {
-            // FIX: Refactor Firebase calls to v8 compat syntax.
             await auth.signInWithEmailAndPassword(email, password);
             // onAuthStateChanged in App.tsx will handle the redirect
         } catch (err: any) {

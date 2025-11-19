@@ -1,17 +1,12 @@
-// FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
+
 import * as React from 'react';
-// FIX: Refactor Firebase calls to v8 compat syntax.
-// FIX: Switched to firebase/compat/app to use v8 syntax with v9 SDK and resolve type errors.
-// FIX: Use Firebase v8 compat import to resolve type error for `User`.
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
 import { SpinnerIcon } from './icons';
 
 interface SettingsProps {
-    user: firebase.User;
+    user: any;
 }
 
-const Settings: React.FC<{ user: firebase.User }> = ({ user }) => {
+const Settings: React.FC<SettingsProps> = ({ user }) => {
     const [fullName, setFullName] = React.useState(user.displayName || '');
     const [newPassword, setNewPassword] = React.useState('');
     const [message, setMessage] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -27,7 +22,6 @@ const Settings: React.FC<{ user: firebase.User }> = ({ user }) => {
         const updatePromises: Promise<void>[] = [];
 
         if (fullName.trim() !== (user.displayName || '').trim() && fullName.trim() !== '') {
-            // FIX: Refactor Firebase calls to v8 compat syntax.
             updatePromises.push(user.updateProfile({ displayName: fullName.trim() }));
         }
 
@@ -37,7 +31,6 @@ const Settings: React.FC<{ user: firebase.User }> = ({ user }) => {
                 setLoading(false);
                 return;
             }
-            // FIX: Refactor Firebase calls to v8 compat syntax.
             updatePromises.push(user.updatePassword(newPassword));
         }
         

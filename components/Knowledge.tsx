@@ -1,10 +1,7 @@
-// FIX: Switched to firebase/compat/app to use v8 syntax with v9 SDK and resolve type errors.
+
 import * as React from 'react';
-// FIX: Use Firebase v8 compat imports to resolve type errors for `User` and `firestore`.
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
-import 'firebase/compat/firestore';
 import { db, storage } from '../firebaseConfig';
+import firebase from '../firebaseConfig';
 import { Property, PropertyType, PropertyStatus, PropertyPlan } from '../types';
 import {
   PlusIcon,
@@ -69,7 +66,7 @@ const sendPropertyWebhook = async (propertyData: Property, action: 'create' | 'u
 
 
 interface KnowledgeProps {
-  user: firebase.User;
+  user: any;
 }
 
 const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
@@ -384,7 +381,6 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
 // Helper for details list in preview card
 const DetailItem: React.FC<{ icon: React.ReactElement; label: string; value?: React.ReactNode }> = ({ icon, label, value }) => (
     <li className="flex items-center text-gray-100">
-        {/* FIX: Explicitly provide the type for the props in React.cloneElement to resolve a TypeScript inference issue where 'className' was not recognized on the icon prop. */}
         {React.cloneElement<{ className?: string }>(icon, { className: 'w-5 h-5 text-gray-400 mr-3 flex-shrink-0' })}
         <span className="font-medium">{label}</span>
         {value && <span className="ml-2 text-gray-300">{value}</span>}
@@ -452,7 +448,7 @@ const PropertyPreviewCard: React.FC<{ property: Partial<Property> }> = ({ proper
 interface PropertyEditorModalProps {
   isOpen: boolean;
   onClose: () => void;
-  user: firebase.User;
+  user: any;
   property: Property | null;
   onSaveSuccess: (message: string) => void;
 }
@@ -548,7 +544,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
         const dataToSave = {
             ...dataForFirestore,
             userId: user.uid,
-            createdAt: property?.createdAt || firebase.firestore.FieldValue.serverTimestamp(),
+            createdAt: property?.createdAt || (firebase as any).firestore.FieldValue.serverTimestamp(),
             imageUrl: finalImageUrl,
             price: Number(formData.price) || 0,
             area: Number(formData.area) || 0,
@@ -560,10 +556,6 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
         const propertyRef = db.collection('users').doc(user.uid).collection('Property_details').doc(property.id);
         await propertyRef.update(dataToSave);
 
-        // Send webhook for update
-        // FIX: Explicitly set createdAt to satisfy the 'Property' type.
-        // The type of dataToSave.createdAt is inferred as a union type, but inside this block,
-        // we know it's a Timestamp from the existing `property`.
         const updatedPropertyData: Property = { ...property, ...dataToSave, createdAt: property.createdAt };
         await sendPropertyWebhook(updatedPropertyData, 'update');
 

@@ -1,10 +1,6 @@
-// FIX: Switched to namespace import for React to resolve JSX intrinsic element errors.
+
 import * as React from 'react';
-// FIX: Switched to firebase/compat/app to use v8 syntax with v9 SDK and resolve type errors.
-// FIX: Use Firebase v8 compat imports to resolve type errors for `User` and `firestore`.
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
-import 'firebase/compat/firestore';
+import firebase from './firebaseConfig'; // Use the exported firebase instance
 import { auth, db } from './firebaseConfig';
 
 import Login from './components/Login';
@@ -30,11 +26,10 @@ import CookieConsentBanner from './components/CookieConsentBanner';
 import Knowledge from './components/Knowledge';
 import LeadsBoard from './components/LeadsBoard';
 
-// ✅ NEW: React Router
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
 
 const App: React.FC = () => {
-    const [user, setUser] = React.useState<firebase.User | null>(null);
+    const [user, setUser] = React.useState<any | null>(null);
     const [loading, setLoading] = React.useState<boolean>(true);
     const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
@@ -45,7 +40,7 @@ const App: React.FC = () => {
     const handleSidebarNavigate = () => setIsSidebarOpen(false); // For mobile
 
     React.useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+        const unsubscribe = auth.onAuthStateChanged((currentUser: any) => {
             setUser(currentUser);
             setLoading(false);
         });
@@ -58,13 +53,13 @@ const App: React.FC = () => {
         const postsCol = db.collection('posts');
         const q = postsCol.where("userId", "==", user.uid).where("status", "==", "scheduled");
 
-        const unsubscribeFromPosts = q.onSnapshot((snapshot) => {
-            const posts: Post[] = snapshot.docs.map(doc => {
+        const unsubscribeFromPosts = q.onSnapshot((snapshot: any) => {
+            const posts: Post[] = snapshot.docs.map((doc: any) => {
                 const data = doc.data();
                 return {
                     id: doc.id,
                     ...data,
-                    scheduledAt: (data.scheduledAt as firebase.firestore.Timestamp).toDate().toISOString(),
+                    scheduledAt: data.scheduledAt.toDate().toISOString(),
                 } as Post;
             });
             scheduledPostsRef.current = posts;
@@ -81,7 +76,7 @@ const App: React.FC = () => {
                 let canProcess = false;
                 
                 try {
-                    await db.runTransaction(async (transaction) => {
+                    await db.runTransaction(async (transaction: any) => {
                         const postDoc = await transaction.get(postRef);
                         if (postDoc.exists && postDoc.data()?.status === 'scheduled') {
                             // This post is available. Claim it by updating its status.

@@ -1,7 +1,6 @@
+
 import * as React from 'react';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
-import 'firebase/compat/firestore';
+import firebase from '../firebaseConfig';
 import { db } from '../firebaseConfig';
 import { Lead, LeadStatus } from '../types';
 import { 
@@ -16,9 +15,14 @@ const STAGES: { title: LeadStatus; color: string; bgColor: string; textColor: st
     { title: 'APPOINTMENT BOOKED', color: 'text-teal-400', bgColor: 'bg-teal-900/50', textColor: 'text-teal-300', borderColor: 'border-teal-500' },
 ];
 
-const formatDate = (timestamp: firebase.firestore.Timestamp | undefined) => {
+const formatDate = (timestamp: any | undefined) => {
     if (!timestamp) return '...';
-    return timestamp.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    // Check if timestamp is a Firestore Timestamp (has toDate method)
+    if (typeof timestamp.toDate === 'function') {
+        return timestamp.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+    // Fallback for Date objects or ISO strings if data model changes
+    return new Date(timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 };
 
 const getInitials = (name: string | null | undefined): string => {
@@ -68,7 +72,7 @@ const LeadCard: React.FC<{ lead: Lead; onCardClick: (lead: Lead) => void; index:
 
 
 interface LeadsBoardProps {
-    user: firebase.User;
+    user: any;
 }
 
 const LeadsBoard: React.FC<LeadsBoardProps> = ({ user }) => {
@@ -211,7 +215,7 @@ const DetailItem: React.FC<{ icon: React.ReactElement; label: string; value: Rea
     </div>
 );
 
-const LeadDetailPanel: React.FC<{ leadId: string | undefined, initialStatus: LeadStatus, user: firebase.User; onClose: () => void; isClosing: boolean; }> = ({ leadId, initialStatus, user, onClose, isClosing }) => {
+const LeadDetailPanel: React.FC<{ leadId: string | undefined, initialStatus: LeadStatus, user: any; onClose: () => void; isClosing: boolean; }> = ({ leadId, initialStatus, user, onClose, isClosing }) => {
     const [leadData, setLeadData] = React.useState<Partial<Lead>>({ status: initialStatus });
     const [isEditing, setIsEditing] = React.useState(!leadId);
     const [loading, setLoading] = React.useState(!!leadId);
@@ -247,7 +251,7 @@ const LeadDetailPanel: React.FC<{ leadId: string | undefined, initialStatus: Lea
             } else {
                  await db.collection('users').doc(user.uid).collection('Leads').add({
                      ...dataToSave,
-                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                     createdAt: (firebase as any).firestore.FieldValue.serverTimestamp()
                  });
                  onClose();
             }
@@ -293,7 +297,6 @@ const LeadDetailPanel: React.FC<{ leadId: string | undefined, initialStatus: Lea
                             <div><label>Phone</label><input type="text" name="phone" value={leadData.phone || ''} onChange={handleChange} className={inputClasses} /></div>
                             <div><label>Email</label><input type="email" name="email" value={leadData.email || ''} onChange={handleChange} className={inputClasses} /></div>
                             <div><label>Status</label><select name="status" value={leadData.status} onChange={handleChange} className={selectClasses}>{STAGES.map(s => <option key={s.title}>{s.title}</option>)}</select></div>
-                            {/* FIX: Correctly bind the value to the leadData.budget property, handling null/undefined cases by displaying an empty string. */}
                             <div><label>Budget</label><input type="number" name="budget" value={leadData.budget ?? ''} onChange={handleChange} className={inputClasses} /></div>
                             <div><label>Location</label><input type="text" name="Location" value={leadData.Location || ''} onChange={handleChange} className={inputClasses} /></div>
                             <div><label>Bedrooms</label><input type="number" name="bedrooms" value={leadData.bedrooms ?? ''} onChange={handleChange} className={inputClasses} /></div>
@@ -337,5 +340,4 @@ const LeadDetailPanel: React.FC<{ leadId: string | undefined, initialStatus: Lea
     );
 };
 
-// FIX: Add default export for the LeadsBoard component to resolve import error in App.tsx.
 export default LeadsBoard;

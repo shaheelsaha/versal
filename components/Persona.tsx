@@ -1,17 +1,11 @@
-// FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
+
 import * as React from 'react';
-// FIX: Switched to firebase/compat/app to use v8 syntax with v9 SDK and resolve type errors.
-// FIX: Use Firebase v8 compat import to resolve type error for `User`.
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
 import { db } from '../firebaseConfig';
-// FIX: Refactor Firebase calls to v8 compat syntax.
-// import { collection, query, where, getDocs, addDoc, updateDoc, doc, limit } from 'firebase/firestore';
 import { Persona as PersonaType } from '../types';
 import { EditIcon, InfoIcon, ProhibitIcon } from './icons';
 
 interface PersonaProps {
-    user: firebase.User;
+    user: any;
 }
 
 const Persona: React.FC<PersonaProps> = ({ user }) => {
@@ -24,7 +18,6 @@ const Persona: React.FC<PersonaProps> = ({ user }) => {
     React.useEffect(() => {
         const fetchPersona = async () => {
             try {
-                // FIX: Refactor Firebase calls to v8 compat syntax.
                 const q = db.collection('personas').where('userId', '==', user.uid).limit(1);
                 const querySnapshot = await q.get();
                 if (!querySnapshot.empty) {
@@ -62,13 +55,9 @@ const Persona: React.FC<PersonaProps> = ({ user }) => {
             };
 
             if (personaId) {
-                // Update existing persona
-                // FIX: Refactor Firebase calls to v8 compat syntax.
                 const personaRef = db.collection('personas').doc(personaId);
                 await personaRef.update(personaData);
             } else {
-                // Create new persona
-                // FIX: Refactor Firebase calls to v8 compat syntax.
                 const docRef = await db.collection('personas').add(personaData);
                 setPersonaId(docRef.id);
             }

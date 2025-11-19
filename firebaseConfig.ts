@@ -1,11 +1,12 @@
-// FIX: Switched to Firebase compat imports to resolve type errors. This is necessary when using the v8 syntax with the v9+ Firebase SDK.
-import firebase from 'firebase/compat/app';
+
+import 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import 'firebase/compat/storage';
 
+// Access the global firebase object exposed by the compat scripts
+const firebase = (window as any).firebase;
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAfAmediQHvqtb42H_wvqc2iFTVtJnlnR4",
   authDomain: "studio-7638670629-b2831.firebaseapp.com",
@@ -17,14 +18,13 @@ const firebaseConfig = {
   measurementId: "G-2P869HPRJZ"
 };
 
-
-// Initialize Firebase
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-// Initialize Firebase Authentication and get a reference to the service
 export const auth = firebase.auth();
 export const db = firebase.firestore();
 export const storage = firebase.storage();
 export const googleProvider = new firebase.auth.GoogleAuthProvider();
+
+export default firebase;

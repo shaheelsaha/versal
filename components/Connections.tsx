@@ -1,9 +1,6 @@
-// FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
+
 import * as React from 'react';
-// FIX: Switched to firebase/compat/app to use v8 syntax with v9 SDK and resolve type errors.
-// FIX: Use Firebase v8 compat imports to resolve type errors for `firestore`.
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/firestore';
+import firebase from '../firebaseConfig';
 import { auth, db } from '../firebaseConfig';
 import { 
     FacebookIcon, 
@@ -288,7 +285,7 @@ export const Connections: React.FC = () => {
             
             const updates: { [key: string]: any } = {};
             config.fieldsToDelete.forEach(field => {
-                 updates[field] = firebase.firestore.FieldValue.delete();
+                 updates[field] = (firebase as any).firestore.FieldValue.delete();
             });
             await docRef.update(updates);
 

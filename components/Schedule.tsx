@@ -1,24 +1,15 @@
-// FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
+
 import * as React from 'react';
-import { GoogleGenAI } from '@google/genai';
 import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, UploadIcon, XIcon, TwitterIcon, LinkedInIcon, DribbbleIcon, FileIcon, InstagramIcon, FacebookIcon, TikTokIcon, ThreadsIcon, YouTubeIcon, PlayIcon, EditIcon, TrashIcon, SparklesIcon, CheckCircleIcon, AlertTriangleIcon, PlusIcon, InfoIcon, PinterestIcon } from './icons';
-import { Post, SocialPlatform, Persona } from '../types';
+import { Post, SocialPlatform } from '../types';
 import { db, storage, auth } from '../firebaseConfig';
-// FIX: Refactor Firebase calls to v8 compat syntax.
-// FIX: Switched to firebase/compat/app to use v8 syntax with v9 SDK and resolve type errors.
-// FIX: Use Firebase v8 compat imports to resolve type errors for `firestore` and `storage`.
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/firestore';
-import 'firebase/compat/storage';
-// import { collection, addDoc, query, where, onSnapshot, Timestamp, doc, updateDoc, deleteDoc, getDocs, limit } from 'firebase/firestore';
-// import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import firebase from '../firebaseConfig'; // Import from local config to avoid runtime failure
 
 // Helper to convert file to base64
 const fileToGenerativePart = async (file: File) => {
   const base64EncodedDataPromise = new Promise<string>((resolve) => {
     const reader = new FileReader();
     reader.onloadend = () => resolve((reader.result as string).split(',')[1]);
-    // FIX: Corrected method name from readDataURL to readAsDataURL.
     reader.readAsDataURL(file);
   });
   return {
@@ -613,21 +604,21 @@ const Schedule: React.FC = () => {
         const postsCol = db.collection('posts');
         const q = postsCol.where("userId", "==", user.uid);
         
-        const unsubscribePosts = q.onSnapshot((querySnapshot) => {
+        const unsubscribePosts = q.onSnapshot((querySnapshot: any) => {
             const postsData: Post[] = [];
-            querySnapshot.forEach((doc) => {
+            querySnapshot.forEach((doc: any) => {
                 const data = doc.data();
                 postsData.push({ 
                     id: doc.id,
                     ...data,
                     // Ensure scheduledAt is always a string in state
-                    scheduledAt: (data.scheduledAt as firebase.firestore.Timestamp).toDate().toISOString()
+                    scheduledAt: data.scheduledAt.toDate().toISOString()
                 } as Post);
             });
             setPosts(postsData);
             setIsLoading(false);
             setError(null);
-        }, (err) => {
+        }, (err: any) => {
             console.error("Error fetching posts: ", err);
             setError("Failed to fetch posts. Check console for details.");
             setIsLoading(false);
@@ -702,7 +693,8 @@ const Schedule: React.FC = () => {
                 userId: user.uid,
                 mediaUrls: finalMediaUrls,
                 status: postData.status,
-                scheduledAt: firebase.firestore.Timestamp.fromDate(new Date(postData.scheduledAt)),
+                // Access the global firebase object for Timestamp
+                scheduledAt: (firebase as any).firestore.Timestamp.fromDate(new Date(postData.scheduledAt)),
                 autoCommenting: postData.autoCommenting || false,
                 contentType: postData.contentType,
             };
