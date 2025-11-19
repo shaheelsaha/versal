@@ -1,11 +1,8 @@
 
-import 'firebase/compat/app';
+import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import 'firebase/compat/storage';
-
-// Access the global firebase object exposed by the compat scripts
-const firebase = (window as any).firebase;
 
 const firebaseConfig = {
   apiKey: "AIzaSyAfAmediQHvqtb42H_wvqc2iFTVtJnlnR4",
