@@ -182,7 +182,7 @@ export const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 export const ThreadsIcon = ({ className, style, ...props }: any) => (
     <img
-        src="https://res.cloudinary.com/ddeaazrgb/image/upload/v1763800228/thread.jpg"
+        src="https://res.cloudinary.com/ddeaazrgb/image/upload/v1763801283/threads_cceuyt.png"
         alt="Threads"
         className={className}
         style={style}
