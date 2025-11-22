@@ -442,14 +442,13 @@ const PostEditorModal: React.FC<PostEditorProps> = ({ isOpen, onClose, onSubmit,
                                         const isConnected = connectedPlatforms.includes(platformKey);
                                         const isSelected = selectedPlatforms.includes(platformKey);
                                         
-                                        const iconStyle: React.CSSProperties = {};
+                                        // FIX: Avoid mutating CSSProperties object directly to resolve TS error
+                                        const iconStyle: React.CSSProperties = (isSelected && isConnected && platformKey !== SocialPlatform.INSTAGRAM)
+                                            ? { color: brandColor }
+                                            : {};
+                                            
                                         let iconClasses = "w-8 h-8 transition-colors duration-200";
-
-                                        if (isSelected && isConnected) {
-                                            if (platformKey !== SocialPlatform.INSTAGRAM) {
-                                                iconStyle.color = brandColor;
-                                            }
-                                        } else {
+                                        if (!isSelected || !isConnected) {
                                             iconClasses += " grayscale";
                                         }
 
