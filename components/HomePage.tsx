@@ -1,3 +1,4 @@
+
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
 import { Link } from 'react-router-dom';
@@ -16,6 +17,7 @@ import {
     YouTubeIcon,
     PinterestIcon,
     ConversationIcon,
+    CheckCircleIcon,
 } from './icons';
 
 interface HomePageProps {}
@@ -144,8 +146,61 @@ const HomePage: React.FC<HomePageProps> = () => {
                         </div>
                     </section>
 
+                    {/* Auto-Personalized Sending Feature Showcase */}
+                    <section className="py-16 md:py-24">
+                        <div className="container mx-auto px-4">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+                                {/* Left Side: Text Content */}
+                                <div className="order-2 lg:order-1 animate-fade-in-up">
+                                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                                        Auto-Personalized Sending
+                                    </h2>
+                                    <h3 className="text-xl leading-relaxed text-transparent bg-clip-text bg-gradient-to-r from-[#00FFC2] to-sky-400 font-semibold mb-6">
+                                        Automatically send personalized messages, property details, and media to every user based on their needs—instantly and intelligently.
+                                    </h3>
+                                    <p className="text-gray-400 mb-8 leading-relaxed text-lg">
+                                        This feature analyzes user requirements in real-time and sends personalized replies, brochures, property media, and follow-up messages automatically. No manual effort needed.
+                                    </p>
+                                    
+                                    <ul className="space-y-4">
+                                        {[
+                                            "Personalized auto-reply",
+                                            "Smart property matching",
+                                            "Auto-send brochures and media",
+                                            "Real-time user qualification"
+                                        ].map((item, index) => (
+                                            <li key={index} className="flex items-start">
+                                                <div className="bg-[#00FFC2]/10 rounded-full p-1 mr-3 mt-0.5">
+                                                    <CheckCircleIcon className="w-5 h-5 text-[#00FFC2]" />
+                                                </div>
+                                                <span className="text-gray-300 font-medium">{item}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                {/* Right Side: Video Embed */}
+                                <div className="order-1 lg:order-2 animate-fade-in-up delay-200">
+                                    <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-gray-900/50 backdrop-blur-sm relative group">
+                                         <div className="absolute inset-0 bg-gradient-to-tr from-[#00FFC2]/5 to-purple-500/5 pointer-events-none z-10"></div>
+                                         <iframe
+                                            src="https://player.cloudinary.com/embed/?cloud_name=ddeaazrgb&public_id=ScreenRecording_11-23-2025_00-18-56_1_oysmab&profile=cld-default"
+                                            width="640"
+                                            height="360" 
+                                            style={{ height: 'auto', width: '100%', aspectRatio: '640 / 360' }}
+                                            allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+                                            allowFullScreen
+                                            frameBorder="0"
+                                            className="w-full h-full"
+                                        ></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
                     {/* How It Works Section */}
-                    <section id="how-it-works" className="py-16 md:py-24">
+                    <section id="how-it-works" className="py-16 md:py-24 bg-black/20">
                         <div className="container mx-auto px-4">
                             <div className="text-center mb-12">
                                 <h2 className="text-3xl md:text-4xl font-bold text-white">Get Started in 3 Simple Steps</h2>
@@ -159,7 +214,7 @@ const HomePage: React.FC<HomePageProps> = () => {
                     </section>
                     
                     {/* Pricing Section */}
-                    <section id="pricing" className="py-16 md:py-24 bg-black/20">
+                    <section id="pricing" className="py-16 md:py-24">
                         <div className="container mx-auto px-4 text-center">
                             <h2 className="text-3xl md:text-4xl font-bold text-white">Choose a Plan That's Right for You</h2>
                             <p className="text-gray-400 mt-3 max-w-xl mx-auto mb-12">
@@ -178,7 +233,7 @@ const HomePage: React.FC<HomePageProps> = () => {
                     </section>
 
                     {/* Testimonials Section */}
-                    <section id="testimonials" className="py-16 md:py-24">
+                    <section id="testimonials" className="py-16 md:py-24 bg-black/20">
                         <div className="container mx-auto px-4">
                             <div className="text-center mb-12">
                                 <h2 className="text-3xl md:text-4xl font-bold text-white">Loved by Creators and Businesses</h2>
