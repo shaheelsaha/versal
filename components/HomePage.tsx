@@ -179,20 +179,20 @@ const HomePage: React.FC<HomePageProps> = () => {
                                     </ul>
                                 </div>
 
-                                {/* Right Side: Video Embed */}
+                                {/* Right Side: Seamless Video Embed */}
                                 <div className="order-1 lg:order-2 animate-fade-in-up delay-200">
-                                    <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-gray-900/50 backdrop-blur-sm relative group">
-                                         <div className="absolute inset-0 bg-gradient-to-tr from-[#00FFC2]/5 to-purple-500/5 pointer-events-none z-10"></div>
-                                         <iframe
-                                            src="https://player.cloudinary.com/embed/?cloud_name=ddeaazrgb&public_id=ScreenRecording_11-23-2025_00-18-56_1_oysmab&profile=cld-default"
-                                            width="640"
-                                            height="360" 
-                                            style={{ height: 'auto', width: '100%', aspectRatio: '640 / 360' }}
-                                            allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-                                            allowFullScreen
-                                            frameBorder="0"
-                                            className="w-full h-full"
-                                        ></iframe>
+                                    <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-gray-900 relative group">
+                                         {/* Gradient Overlay for subtle tint */}
+                                         <div className="absolute inset-0 bg-gradient-to-tr from-[#00FFC2]/5 to-purple-500/5 pointer-events-none z-10 mix-blend-overlay"></div>
+                                         <video
+                                            src="https://res.cloudinary.com/ddeaazrgb/video/upload/ScreenRecording_11-23-2025_00-18-56_1_oysmab.mp4"
+                                            autoPlay
+                                            loop
+                                            muted
+                                            playsInline
+                                            className="w-full h-full object-cover block"
+                                            style={{ aspectRatio: '16/9' }}
+                                        />
                                     </div>
                                 </div>
                             </div>
