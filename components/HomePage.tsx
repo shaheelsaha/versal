@@ -156,7 +156,7 @@ const HomePage: React.FC<HomePageProps> = () => {
                                         Auto-Personalized Sending
                                     </h2>
                                     <h3 className="text-xl leading-relaxed text-transparent bg-clip-text bg-gradient-to-r from-[#00FFC2] to-sky-400 font-semibold mb-6">
-                                        This feature automatically collects each user’s requirements and builds a personalized property package for them—across Instagram, Facebook, and WhatsApp.
+                                        This feature automatically collects each user’s requirements and builds a personalized property package for them across Instagram, Facebook, and WhatsApp.
                                     </h3>
                                     <p className="text-gray-400 mb-8 leading-relaxed text-lg">
                                         It analyzes what the user is looking for, finds the best-matching properties, and instantly sends tailored messages, property details, brochures, and media without any manual work.
