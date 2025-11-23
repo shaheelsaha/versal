@@ -156,18 +156,18 @@ const HomePage: React.FC<HomePageProps> = () => {
                                         Auto-Personalized Sending
                                     </h2>
                                     <h3 className="text-xl leading-relaxed text-transparent bg-clip-text bg-gradient-to-r from-[#00FFC2] to-sky-400 font-semibold mb-6">
-                                        Automatically send personalized messages, property details, and media to every user based on their needs—instantly and intelligently.
+                                        This feature automatically collects each user’s requirements and builds a personalized property package for them—across Instagram, Facebook, and WhatsApp.
                                     </h3>
                                     <p className="text-gray-400 mb-8 leading-relaxed text-lg">
-                                        This feature analyzes user requirements in real-time and sends personalized replies, brochures, property media, and follow-up messages automatically. No manual effort needed.
+                                        It analyzes what the user is looking for, finds the best-matching properties, and instantly sends tailored messages, property details, brochures, and media without any manual work.
                                     </p>
                                     
                                     <ul className="space-y-4">
                                         {[
-                                            "Personalized auto-reply",
+                                            "Personalized property search",
                                             "Smart property matching",
-                                            "Auto-send brochures and media",
-                                            "Real-time user qualification"
+                                            "Auto-assembled media & brochures",
+                                            "Instant delivery across WhatsApp, Instagram, and Facebook"
                                         ].map((item, index) => (
                                             <li key={index} className="flex items-start">
                                                 <div className="bg-[#00FFC2]/10 rounded-full p-1 mr-3 mt-0.5">
