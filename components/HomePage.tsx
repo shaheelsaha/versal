@@ -10,7 +10,7 @@ import {
     ScheduleIcon, 
     SparklesIcon, 
     AnalyticsIcon, 
-    InstagramIcon,
+    InstagramIcon, 
     FacebookIcon,
     LinkedInIcon,
     TikTokIcon,
@@ -179,11 +179,11 @@ const HomePage: React.FC<HomePageProps> = () => {
                                     </ul>
                                 </div>
 
-                                {/* Right Side: Seamless Video Embed */}
-                                <div className="order-1 lg:order-2 animate-fade-in-up delay-200">
-                                    <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-gray-900 relative group">
-                                         {/* Gradient Overlay for subtle tint */}
-                                         <div className="absolute inset-0 bg-gradient-to-tr from-[#00FFC2]/5 to-purple-500/5 pointer-events-none z-10 mix-blend-overlay"></div>
+                                {/* Right Side: Seamless Video Embed (Reels Style) */}
+                                <div className="order-1 lg:order-2 animate-fade-in-up delay-200 flex justify-center w-full">
+                                    <div className="relative w-full max-w-[300px] aspect-[9/16] rounded-[2.5rem] overflow-hidden border-4 border-gray-800 shadow-[0_0_50px_-12px_rgba(0,255,194,0.15)] bg-gray-900 group">
+                                         {/* Gradient Overlay for subtle depth */}
+                                         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40 pointer-events-none z-10"></div>
                                          <video
                                             src="https://res.cloudinary.com/ddeaazrgb/video/upload/ScreenRecording_11-23-2025_00-18-56_1_oysmab.mp4"
                                             autoPlay
@@ -191,8 +191,9 @@ const HomePage: React.FC<HomePageProps> = () => {
                                             muted
                                             playsInline
                                             className="w-full h-full object-cover block"
-                                            style={{ aspectRatio: '16/9' }}
                                         />
+                                        {/* Optional Reflection */}
+                                        <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none z-20 mix-blend-overlay"></div>
                                     </div>
                                 </div>
                             </div>
