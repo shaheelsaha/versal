@@ -200,8 +200,62 @@ const HomePage: React.FC<HomePageProps> = () => {
                         </div>
                     </section>
 
+                    {/* Auto-Commenting DM Redirect Feature Showcase */}
+                    <section className="py-16 md:py-24 bg-black/20">
+                        <div className="container mx-auto px-4">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+                                {/* Left Side: Seamless Video Embed (Reels Style) */}
+                                <div className="order-1 lg:order-1 animate-fade-in-up flex justify-center w-full">
+                                    <div className="relative w-full max-w-[300px] aspect-[9/16] rounded-[2.5rem] overflow-hidden border-4 border-gray-800 shadow-[0_0_50px_-12px_rgba(56,189,248,0.15)] bg-gray-900 group">
+                                         {/* Gradient Overlay for subtle depth */}
+                                         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40 pointer-events-none z-10"></div>
+                                         <video
+                                            src="https://res.cloudinary.com/ddeaazrgb/video/upload/2025-11-23_19_15_11_video_tzepc9.mp4"
+                                            autoPlay
+                                            loop
+                                            muted
+                                            playsInline
+                                            className="w-full h-full object-cover block"
+                                        />
+                                        {/* Optional Reflection */}
+                                        <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none z-20 mix-blend-overlay"></div>
+                                    </div>
+                                </div>
+
+                                {/* Right Side: Text Content */}
+                                <div className="order-2 lg:order-2 animate-fade-in-up delay-200">
+                                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                                        Auto-Commenting DM Redirect
+                                    </h2>
+                                    <h3 className="text-xl leading-relaxed text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#00FFC2] font-semibold mb-6">
+                                        Turn public comments into private conversations automatically.
+                                    </h3>
+                                    <p className="text-gray-400 mb-8 leading-relaxed text-lg">
+                                        This feature automatically replies to comments on your posts and asks users to DM you for more details. This moves conversations into your inbox, where the AI can collect information, qualify leads, and continue the conversation automatically.
+                                    </p>
+                                    
+                                    <ul className="space-y-4">
+                                        {[
+                                            "Replies instantly to every comment",
+                                            "Encourages users to DM for more info",
+                                            "Converts comments into qualified leads",
+                                            "Fully automated across major platforms"
+                                        ].map((item, index) => (
+                                            <li key={index} className="flex items-start">
+                                                <div className="bg-sky-500/10 rounded-full p-1 mr-3 mt-0.5">
+                                                    <CheckCircleIcon className="w-5 h-5 text-sky-400" />
+                                                </div>
+                                                <span className="text-gray-300 font-medium">{item}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
                     {/* How It Works Section */}
-                    <section id="how-it-works" className="py-16 md:py-24 bg-black/20">
+                    <section id="how-it-works" className="py-16 md:py-24">
                         <div className="container mx-auto px-4">
                             <div className="text-center mb-12">
                                 <h2 className="text-3xl md:text-4xl font-bold text-white">Get Started in 3 Simple Steps</h2>
@@ -215,7 +269,7 @@ const HomePage: React.FC<HomePageProps> = () => {
                     </section>
                     
                     {/* Pricing Section */}
-                    <section id="pricing" className="py-16 md:py-24">
+                    <section id="pricing" className="py-16 md:py-24 bg-black/20">
                         <div className="container mx-auto px-4 text-center">
                             <h2 className="text-3xl md:text-4xl font-bold text-white">Choose a Plan That's Right for You</h2>
                             <p className="text-gray-400 mt-3 max-w-xl mx-auto mb-12">
@@ -234,7 +288,7 @@ const HomePage: React.FC<HomePageProps> = () => {
                     </section>
 
                     {/* Testimonials Section */}
-                    <section id="testimonials" className="py-16 md:py-24 bg-black/20">
+                    <section id="testimonials" className="py-16 md:py-24">
                         <div className="container mx-auto px-4">
                             <div className="text-center mb-12">
                                 <h2 className="text-3xl md:text-4xl font-bold text-white">Loved by Creators and Businesses</h2>
@@ -257,7 +311,7 @@ const HomePage: React.FC<HomePageProps> = () => {
                     </section>
 
                     {/* Final CTA */}
-                    <section className="py-16 md:py-24">
+                    <section className="py-16 md:py-24 bg-black/20">
                          <div className="container mx-auto px-4 text-center">
                              <div className="max-w-3xl mx-auto bg-gradient-to-r from-teal-500/20 to-blue-500/20 rounded-3xl p-6 sm:p-10 border border-white/10">
                                 <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Ready to automate your social media?</h2>
