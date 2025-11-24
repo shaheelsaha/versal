@@ -112,8 +112,42 @@ const HomePage: React.FC<HomePageProps> = () => {
                             </div>
                         </div>
                     </section>
+
+                    {/* Core Features Section */}
+                    <section id="features" className="py-16 md:py-24 bg-black/20">
+                        <div className="container mx-auto px-4">
+                             <div className="text-center mb-12">
+                                <h2 className="text-3xl md:text-4xl font-bold text-white">Your Social Media Co-Pilot</h2>
+                                <p className="text-gray-400 mt-3 max-w-xl mx-auto">
+                                    SAHA AI is packed with features to save you time and supercharge your growth.
+                                </p>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                                <FeatureCard 
+                                    icon={<ScheduleIcon />}
+                                    title="Multi-Platform Publishing"
+                                    description="Upload your media once, then schedule or publish it across Instagram, Facebook, LinkedIn, and more with a single click."
+                                />
+                                <FeatureCard 
+                                    icon={<SparklesIcon />}
+                                    title="AI Caption Generator"
+                                    description="Never run out of ideas. Generate engaging captions, hashtags, and post concepts instantly with our advanced AI assistant."
+                                />
+                                <FeatureCard 
+                                    icon={<ConversationIcon />}
+                                    title="Smart Engagement AI"
+                                    description="Automatically reply to comments and DMs with a human-like touch. Convert inquiries into leads 24/7."
+                                />
+                                <FeatureCard 
+                                    icon={<MicrophoneIcon />}
+                                    title="AI Voice Agent"
+                                    description="A 24/7 intelligent voice assistant for your website that answers questions, qualifies visitors, and captures leads instantly."
+                                />
+                            </div>
+                        </div>
+                    </section>
                     
-                    {/* AI Voice Website Widget Feature Showcase (Placed Above Core Features) */}
+                    {/* AI Voice Website Widget Feature Showcase */}
                     <section className="py-16 md:py-24 border-b border-white/5">
                         <div className="container mx-auto px-4">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
@@ -162,40 +196,6 @@ const HomePage: React.FC<HomePageProps> = () => {
                                         <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none z-20 mix-blend-overlay"></div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* Core Features Section */}
-                    <section id="features" className="py-16 md:py-24 bg-black/20">
-                        <div className="container mx-auto px-4">
-                             <div className="text-center mb-12">
-                                <h2 className="text-3xl md:text-4xl font-bold text-white">Your Social Media Co-Pilot</h2>
-                                <p className="text-gray-400 mt-3 max-w-xl mx-auto">
-                                    SAHA AI is packed with features to save you time and supercharge your growth.
-                                </p>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                                <FeatureCard 
-                                    icon={<ScheduleIcon />}
-                                    title="Multi-Platform Publishing"
-                                    description="Upload your media once, then schedule or publish it across Instagram, Facebook, LinkedIn, and more with a single click."
-                                />
-                                <FeatureCard 
-                                    icon={<SparklesIcon />}
-                                    title="AI Caption Generator"
-                                    description="Never run out of ideas. Generate engaging captions, hashtags, and post concepts instantly with our advanced AI assistant."
-                                />
-                                <FeatureCard 
-                                    icon={<ConversationIcon />}
-                                    title="Smart Engagement AI"
-                                    description="Automatically reply to comments and DMs with a human-like touch. Convert inquiries into leads 24/7."
-                                />
-                                <FeatureCard 
-                                    icon={<MicrophoneIcon />}
-                                    title="AI Voice Agent"
-                                    description="A 24/7 intelligent voice assistant for your website that answers questions, qualifies visitors, and captures leads instantly."
-                                />
                             </div>
                         </div>
                     </section>
