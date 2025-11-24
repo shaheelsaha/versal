@@ -18,6 +18,7 @@ import {
     PinterestIcon,
     ConversationIcon,
     CheckCircleIcon,
+    MicrophoneIcon,
 } from './icons';
 
 interface HomePageProps {}
@@ -188,12 +189,12 @@ const HomePage: React.FC<HomePageProps> = () => {
                                 <FeatureCard 
                                     icon={<ConversationIcon />}
                                     title="Smart Engagement AI"
-                                    description="Automatically reply to comments and DMs with a human-like touch. Convert inquiries into leads 24/7. (Coming Soon)"
+                                    description="Automatically reply to comments and DMs with a human-like touch. Convert inquiries into leads 24/7."
                                 />
                                 <FeatureCard 
-                                    icon={<AnalyticsIcon />}
-                                    title="CRM Auto-Update"
-                                    description="Capture lead details from your social conversations and automatically update your CRM, saving you hours of manual data entry. (Coming Soon)"
+                                    icon={<MicrophoneIcon />}
+                                    title="AI Voice Agent"
+                                    description="A 24/7 intelligent voice assistant for your website that answers questions, qualifies visitors, and captures leads instantly."
                                 />
                             </div>
                         </div>
