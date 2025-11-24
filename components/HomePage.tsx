@@ -112,6 +112,59 @@ const HomePage: React.FC<HomePageProps> = () => {
                         </div>
                     </section>
                     
+                    {/* AI Voice Website Widget Feature Showcase (Placed Above Core Features) */}
+                    <section className="py-16 md:py-24 border-b border-white/5">
+                        <div className="container mx-auto px-4">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+                                {/* Left Side: Text Content */}
+                                <div className="animate-fade-in-up">
+                                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                                        AI Voice Website Widget
+                                    </h2>
+                                    <h3 className="text-xl leading-relaxed text-transparent bg-clip-text bg-gradient-to-r from-[#00FFC2] to-sky-400 font-semibold mb-6">
+                                        Let visitors speak with your AI agent directly on your website.
+                                    </h3>
+                                    <p className="text-gray-400 mb-8 leading-relaxed text-lg">
+                                        Our AI Voice Agent is available 24/7 on your website to answer questions, collect lead details, send property information, and guide users automatically. It helps you convert visitors into leads without manual effort.
+                                    </p>
+                                    
+                                    <ul className="space-y-4">
+                                        {[
+                                            "24/7 website voice assistant",
+                                            "Answers all questions in real time",
+                                            "Collects and saves all incoming leads",
+                                            "Sends property details automatically",
+                                            "Supports all languages",
+                                            "Works on any device"
+                                        ].map((item, index) => (
+                                            <li key={index} className="flex items-start">
+                                                <div className="bg-[#00FFC2]/10 rounded-full p-1 mr-3 mt-0.5">
+                                                    <CheckCircleIcon className="w-5 h-5 text-[#00FFC2]" />
+                                                </div>
+                                                <span className="text-gray-300 font-medium">{item}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                {/* Right Side: 16:9 Video Embed */}
+                                <div className="animate-fade-in-up delay-200 flex justify-center w-full">
+                                    <div className="relative w-full aspect-video rounded-2xl overflow-hidden border-2 border-white/10 shadow-[0_0_50px_-12px_rgba(0,255,194,0.1)] bg-gray-900 group">
+                                         <video
+                                            src="https://res.cloudinary.com/ddeaazrgb/video/upload/cursorful-video-1763975478768_ymih7n.mp4"
+                                            autoPlay
+                                            loop
+                                            muted
+                                            playsInline
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none z-20 mix-blend-overlay"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
                     {/* Core Features Section */}
                     <section id="features" className="py-16 md:py-24 bg-black/20">
                         <div className="container mx-auto px-4">
