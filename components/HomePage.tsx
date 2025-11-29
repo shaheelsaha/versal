@@ -152,7 +152,7 @@ const HomePage: React.FC<HomePageProps> = () => {
                         <div className="container mx-auto px-4">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
                                 {/* Left Side: Text Content */}
-                                <div className="animate-fade-in-up">
+                                <div className="order-2 lg:order-1 animate-fade-in-up">
                                     <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
                                         AI Voice Website Widget
                                     </h2>
@@ -182,18 +182,32 @@ const HomePage: React.FC<HomePageProps> = () => {
                                     </ul>
                                 </div>
 
-                                {/* Right Side: 16:9 Video Embed */}
-                                <div className="animate-fade-in-up delay-200 flex justify-center w-full">
-                                    <div className="relative w-full aspect-video rounded-2xl overflow-hidden border-2 border-white/10 shadow-[0_0_50px_-12px_rgba(0,255,194,0.1)] bg-gray-900 group">
-                                         <video
-                                            src="https://res.cloudinary.com/ddeaazrgb/video/upload/cursorful-video-1763975478768_ymih7n.mp4"
-                                            autoPlay
-                                            loop
-                                            muted
-                                            playsInline
-                                            className="w-full h-full object-cover"
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none z-20 mix-blend-overlay"></div>
+                                {/* Right Side: Video Embed (Browser Mockup) */}
+                                <div className="order-1 lg:order-2 animate-fade-in-up delay-200 flex justify-center w-full">
+                                    <div className="relative w-full rounded-xl overflow-hidden border border-white/10 shadow-[0_0_50px_-12px_rgba(0,255,194,0.1)] bg-gray-900 group">
+                                        {/* Browser Header Mockup */}
+                                        <div className="bg-gray-800/80 backdrop-blur-md border-b border-white/10 p-3 flex items-center space-x-2">
+                                            <div className="flex space-x-1.5">
+                                                <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
+                                                <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                                                <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
+                                            </div>
+                                            <div className="ml-4 flex-1 bg-gray-900/50 rounded-md h-6 max-w-xs mx-auto flex items-center px-3 text-[10px] text-gray-500">
+                                                sahaai.io/voice-agent
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="aspect-video relative bg-black">
+                                            <video
+                                                src="https://res.cloudinary.com/ddeaazrgb/video/upload/cursorful-video-1763975478768_ymih7n.mp4"
+                                                autoPlay
+                                                loop
+                                                muted
+                                                playsInline
+                                                className="w-full h-full object-cover"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none z-20 mix-blend-overlay"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -258,26 +272,8 @@ const HomePage: React.FC<HomePageProps> = () => {
                     <section className="py-16 md:py-24 bg-black/20">
                         <div className="container mx-auto px-4">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-                                {/* Left Side: Seamless Video Embed (Reels Style) */}
-                                <div className="order-1 lg:order-1 animate-fade-in-up flex justify-center w-full">
-                                    <div className="relative w-full max-w-[300px] aspect-[9/16] rounded-[2.5rem] overflow-hidden border-4 border-gray-800 shadow-[0_0_50px_-12px_rgba(56,189,248,0.15)] bg-gray-900 group">
-                                         {/* Gradient Overlay for subtle depth */}
-                                         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40 pointer-events-none z-10"></div>
-                                         <video
-                                            src="https://res.cloudinary.com/ddeaazrgb/video/upload/2025-11-23_19_15_11_video_tzepc9.mp4"
-                                            autoPlay
-                                            loop
-                                            muted
-                                            playsInline
-                                            className="w-full h-full object-cover block"
-                                        />
-                                        {/* Optional Reflection */}
-                                        <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none z-20 mix-blend-overlay"></div>
-                                    </div>
-                                </div>
-
                                 {/* Right Side: Text Content */}
-                                <div className="order-2 lg:order-2 animate-fade-in-up delay-200">
+                                <div className="order-2 lg:order-1 animate-fade-in-up">
                                     <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
                                         Auto-Commenting DM Redirect
                                     </h2>
@@ -303,6 +299,24 @@ const HomePage: React.FC<HomePageProps> = () => {
                                             </li>
                                         ))}
                                     </ul>
+                                </div>
+
+                                {/* Left Side: Seamless Video Embed (Reels Style) */}
+                                <div className="order-1 lg:order-2 animate-fade-in-up delay-200 flex justify-center w-full">
+                                    <div className="relative w-full max-w-[300px] aspect-[9/16] rounded-[2.5rem] overflow-hidden border-4 border-gray-800 shadow-[0_0_50px_-12px_rgba(56,189,248,0.15)] bg-gray-900 group">
+                                         {/* Gradient Overlay for subtle depth */}
+                                         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40 pointer-events-none z-10"></div>
+                                         <video
+                                            src="https://res.cloudinary.com/ddeaazrgb/video/upload/2025-11-23_19_15_11_video_tzepc9.mp4"
+                                            autoPlay
+                                            loop
+                                            muted
+                                            playsInline
+                                            className="w-full h-full object-cover block"
+                                        />
+                                        {/* Optional Reflection */}
+                                        <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none z-20 mix-blend-overlay"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
