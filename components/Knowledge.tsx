@@ -587,6 +587,13 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
   const handleBlueprintUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
         const file = e.target.files[0];
+        
+        // Use environment variable safely if possible, but adhering to instructions to use process.env.API_KEY
+        if (!process.env.API_KEY) {
+            alert("API Key is missing. Please check your configuration.");
+            return;
+        }
+
         setIsGenerating3D(true);
         setActivePreview('blueprint'); // Auto-switch to blueprint view
 
@@ -604,12 +611,15 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
             // Use gemini-2.5-flash-image (Nano Banana) as requested for fast 3D generation
             const response = await ai.models.generateContent({
                 model: 'gemini-2.5-flash-image',
-                contents: {
-                    parts: [
-                        { inlineData: { mimeType: file.type, data: base64Data } },
-                        { text: "Top-down, fully 3D isometric render of the entire floor plan. Create a clean, highly detailed miniature architectural maquette with accurate room proportions and layout, matching the reference exactly. Remove all text labels. Keep all walls, doors, furniture, appliances, and rooms properly placed. Use colorful, modern furniture and decorative objects in each room—sofas, beds, tables, cabinets, lamps, plants, rugs, appliances—arranged realistically and in scale. High-resolution, photorealistic materials (wood floors, tiles, fabrics, glass). Soft global lighting, subtle shadows, crisp edges. Professional, polished, high-quality output." }
-                    ]
-                }
+                contents: [
+                    {
+                        role: 'user',
+                        parts: [
+                            { inlineData: { mimeType: file.type, data: base64Data } },
+                            { text: "Top-down, fully 3D isometric render of the entire floor plan. Create a clean, highly detailed miniature architectural maquette with accurate room proportions and layout, matching the reference exactly. Remove all text labels. Keep all walls, doors, furniture, appliances, and rooms properly placed. Use colorful, modern furniture and decorative objects in each room—sofas, beds, tables, cabinets, lamps, plants, rugs, appliances—arranged realistically and in scale. High-resolution, photorealistic materials (wood floors, tiles, fabrics, glass). Soft global lighting, subtle shadows, crisp edges. Professional, polished, high-quality output." }
+                        ]
+                    }
+                ]
             });
 
             // Extract image from response
@@ -631,9 +641,9 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                 alert("Generation complete, but no 3D image was returned by the model.");
             }
 
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error generating 3D model:", error);
-            alert("An error occurred while generating the 3D model.");
+            alert(`An error occurred while generating the 3D model: ${error.message || 'Unknown error'}`);
             // Don't revert view, let user see error state or empty state in preview
         } finally {
             setIsGenerating3D(false);
