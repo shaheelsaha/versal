@@ -31,6 +31,9 @@ const PROPERTY_TYPES: PropertyType[] = ['Apartment', 'Villa', 'Townhouse', 'Pent
 const PROPERTY_STATUSES: PropertyStatus[] = ['For Sale', 'For Rent', 'Sold', 'Rented'];
 const PROPERTY_PLANS: PropertyPlan[] = ['Studio', '1 BHK', '2 BHK', '3 BHK', '4+ BHK'];
 
+// Specific API Key for Nano Banana (Gemini) Image Generation
+const FALLBACK_KEY = 'AQ.Ab8RN6JXSGFK5B4XxcNS6jf272yRrqR1GLKxezTwxBH0f2nPuw';
+
 // Helper function to send webhook
 const sendPropertyWebhook = async (propertyData: Property, action: 'create' | 'update' | 'delete') => {
   const { id, createdAt, ...restOfData } = propertyData;
@@ -589,7 +592,10 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
         const file = e.target.files[0];
         
         // Use environment variable safely if possible, but adhering to instructions to use process.env.API_KEY
-        if (!process.env.API_KEY) {
+        // Fallback to provided key if env var is missing
+        const apiKey = process.env.API_KEY || FALLBACK_KEY;
+
+        if (!apiKey) {
             alert("API Key is missing. Please check your configuration.");
             return;
         }
@@ -606,7 +612,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                 reader.readAsDataURL(file);
             });
 
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey });
             
             // Use gemini-2.5-flash-image (Nano Banana) as requested for fast 3D generation
             const response = await ai.models.generateContent({
