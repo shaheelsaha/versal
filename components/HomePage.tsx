@@ -153,14 +153,11 @@ const HomePage: React.FC<HomePageProps> = () => {
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
                                 {/* Left Side: Text Content */}
                                 <div className="order-2 lg:order-1 animate-fade-in-up">
-                                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
                                         AI Voice Website Widget
                                     </h2>
-                                    <h3 className="text-xl leading-relaxed text-transparent bg-clip-text bg-gradient-to-r from-[#00FFC2] to-sky-400 font-semibold mb-6">
-                                        Let visitors speak with your AI agent directly on your website.
-                                    </h3>
-                                    <p className="text-gray-400 mb-8 leading-relaxed text-lg">
-                                        Our AI Voice Agent is available 24/7 on your website to answer questions, collect lead details, send property information, and guide users automatically. It helps you convert visitors into leads without manual effort.
+                                    <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+                                        Let visitors speak with your AI agent directly on your website. The AI answers questions, collects leads, books appointments, and responds instantly in real time.
                                     </p>
                                     
                                     <ul className="space-y-4">
@@ -220,14 +217,11 @@ const HomePage: React.FC<HomePageProps> = () => {
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
                                 {/* Left Side: Text Content */}
                                 <div className="order-2 lg:order-1 animate-fade-in-up">
-                                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
                                         Auto-Personalized Sending
                                     </h2>
-                                    <h3 className="text-xl leading-relaxed text-transparent bg-clip-text bg-gradient-to-r from-[#00FFC2] to-sky-400 font-semibold mb-6">
-                                        This feature automatically collects each user’s requirements and builds a personalized property package for them across Instagram, Facebook, and WhatsApp.
-                                    </h3>
-                                    <p className="text-gray-400 mb-8 leading-relaxed text-lg">
-                                        It analyzes what the user is looking for, finds the best-matching properties, and instantly sends tailored messages, property details, brochures, and media without any manual work.
+                                    <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+                                        This feature automatically collects user requirements and sends a personalized property package with listings, images, brochures, and videos to Instagram, Facebook, and WhatsApp.
                                     </p>
                                     
                                     <ul className="space-y-4">
@@ -274,14 +268,11 @@ const HomePage: React.FC<HomePageProps> = () => {
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
                                 {/* Right Side: Text Content */}
                                 <div className="order-2 lg:order-1 animate-fade-in-up">
-                                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
                                         Auto-Commenting DM Redirect
                                     </h2>
-                                    <h3 className="text-xl leading-relaxed text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#00FFC2] font-semibold mb-6">
-                                        Turn public comments into private conversations automatically.
-                                    </h3>
-                                    <p className="text-gray-400 mb-8 leading-relaxed text-lg">
-                                        This feature automatically replies to comments on your posts and asks users to DM you for more details. This moves conversations into your inbox, where the AI can collect information, qualify leads, and continue the conversation automatically.
+                                    <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+                                        Your AI instantly replies to comments on Instagram and Facebook and redirects users to DM. Inside the DM, the AI collects requirements and qualifies the lead automatically.
                                     </p>
                                     
                                     <ul className="space-y-4">
