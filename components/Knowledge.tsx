@@ -3,6 +3,7 @@ import * as React from 'react';
 import { db, storage } from '../firebaseConfig';
 import firebase from '../firebaseConfig';
 import { Property, PropertyType, PropertyStatus, PropertyPlan } from '../types';
+import { GoogleGenAI } from "@google/genai";
 import {
   PlusIcon,
   FilterIcon,
@@ -404,54 +405,98 @@ const PropertyPreviewCard: React.FC<{ property: Partial<Property> }> = ({ proper
         area = 0,
         imageUrl,
         propertyLink,
-        blueprint3DUrl,
       } = property;
 
     return (
-      <div className="bg-gray-800 rounded-xl shadow-lg border border-gray-700 w-full max-w-sm mx-auto font-sans">
+      <div className="bg-gray-800 rounded-xl shadow-lg border border-gray-700 w-full max-w-sm mx-auto font-sans h-full flex flex-col">
         <img
             src={imageUrl || 'https://storage.googleapis.com/aistudio-hosting.appspot.com/gallery/5f02f0a1-a637-4560-a292-32b0a94e844a.jpeg'}
             alt={title}
-            className="w-full h-48 object-cover rounded-t-xl bg-gray-700"
+            className="w-full h-48 object-cover rounded-t-xl bg-gray-700 flex-shrink-0"
             onError={(e) => { e.currentTarget.src = 'https://storage.googleapis.com/aistudio-hosting.appspot.com/gallery/5f02f0a1-a637-4560-a292-32b0a94e844a.jpeg'; }}
         />
-        <div className="p-4">
-            <h3 className="text-base font-semibold text-gray-100 leading-tight">
-                {title || 'Property Title'}
-            </h3>
-            <p className="text-xs text-gray-400 mt-1">propertyfinder.ae</p>
-        </div>
-        <div className="mx-4 mb-4 p-4 bg-gray-700/50 border border-gray-600/80 rounded-lg">
-            <ul className="space-y-3 text-sm">
-                <DetailItem icon={<LocationIcon />} label={location || "Property Location"} />
-                <li className="flex items-center text-gray-100 font-medium flex-wrap">
-                    <CurrencyDollarIcon className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
-                    <span>{formattedPrice}</span>
-                    <span className="text-gray-600 mx-2.5">|</span>
-                    <BedIcon className="w-5 h-5 text-gray-400 mr-1.5 flex-shrink-0" />
-                    <span>{bedrooms} bed</span>
-                    <span className="text-gray-600 mx-2.5">|</span>
-                    <BathIcon className="w-5 h-5 text-gray-400 mr-1.5 flex-shrink-0" />
-                    <span>{bathrooms} bath</span>
-                </li>
-                <DetailItem icon={<AreaIcon />} label={`${area} sqft`} />
-                <li className="flex items-center text-gray-100">
-                    <LinkIcon className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
-                    <a href={propertyLink || '#'} target="_blank" rel="noopener noreferrer" className="text-teal-400 hover:underline text-xs truncate">
-                        {propertyLink || 'No link provided'}
-                    </a>
-                </li>
-            </ul>
-        </div>
-        {blueprint3DUrl && (
-            <div className="mx-4 mb-4">
-                <p className="text-xs font-semibold text-gray-400 mb-2">3D Blueprint View</p>
-                <img src={blueprint3DUrl} alt="3D Blueprint" className="w-full h-32 object-cover rounded-lg border border-gray-700"/>
+        <div className="p-4 flex-1 flex flex-col">
+            <div>
+                <h3 className="text-base font-semibold text-gray-100 leading-tight">
+                    {title || 'Property Title'}
+                </h3>
+                <p className="text-xs text-gray-400 mt-1">propertyfinder.ae</p>
             </div>
-        )}
+            <div className="mt-4 p-4 bg-gray-700/50 border border-gray-600/80 rounded-lg flex-1">
+                <ul className="space-y-3 text-sm">
+                    <DetailItem icon={<LocationIcon />} label={location || "Property Location"} />
+                    <li className="flex items-center text-gray-100 font-medium flex-wrap">
+                        <CurrencyDollarIcon className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
+                        <span>{formattedPrice}</span>
+                        <span className="text-gray-600 mx-2.5">|</span>
+                        <BedIcon className="w-5 h-5 text-gray-400 mr-1.5 flex-shrink-0" />
+                        <span>{bedrooms} bed</span>
+                        <span className="text-gray-600 mx-2.5">|</span>
+                        <BathIcon className="w-5 h-5 text-gray-400 mr-1.5 flex-shrink-0" />
+                        <span>{bathrooms} bath</span>
+                    </li>
+                    <DetailItem icon={<AreaIcon />} label={`${area} sqft`} />
+                    <li className="flex items-center text-gray-100">
+                        <LinkIcon className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
+                        <a href={propertyLink || '#'} target="_blank" rel="noopener noreferrer" className="text-teal-400 hover:underline text-xs truncate">
+                            {propertyLink || 'No link provided'}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
       </div>
     );
 };
+
+const BlueprintPreviewCard: React.FC<{ imageUrl?: string, isGenerating: boolean }> = ({ imageUrl, isGenerating }) => {
+    return (
+        <div className="bg-gray-800 rounded-xl shadow-lg border border-gray-700 w-full max-w-sm mx-auto font-sans h-full flex flex-col p-4 items-center justify-center text-center">
+            {isGenerating ? (
+                <div className="flex flex-col items-center">
+                    <div className="relative w-20 h-20 mb-4">
+                        <div className="absolute inset-0 rounded-full border-4 border-gray-700"></div>
+                        <div className="absolute inset-0 rounded-full border-4 border-t-[#00FFC2] animate-spin"></div>
+                        <SparklesIcon className="absolute inset-0 m-auto w-8 h-8 text-[#00FFC2] animate-pulse" />
+                    </div>
+                    <h3 className="text-lg font-bold text-white mb-2">Generating 3D Model...</h3>
+                    <p className="text-sm text-gray-400 max-w-xs">
+                        Our AI is converting your blueprint into a photorealistic 3D isometric render. This may take a few seconds.
+                    </p>
+                </div>
+            ) : imageUrl ? (
+                <div className="w-full h-full flex flex-col">
+                    <div className="flex-1 relative rounded-lg overflow-hidden border border-gray-600 group bg-black">
+                        <img 
+                            src={imageUrl} 
+                            alt="Generated 3D Model" 
+                            className="w-full h-full object-contain"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center p-4">
+                            <a href={imageUrl} target="_blank" rel="noopener noreferrer" className="text-white text-sm font-semibold hover:text-[#00FFC2] flex items-center">
+                                <LinkIcon className="w-4 h-4 mr-2" /> View Full Size
+                            </a>
+                        </div>
+                    </div>
+                    <div className="mt-4 text-left">
+                        <h4 className="text-white font-semibold flex items-center">
+                            <CheckCircleIcon className="w-4 h-4 text-green-400 mr-2" />
+                            3D Render Complete
+                        </h4>
+                        <p className="text-xs text-gray-400 mt-1">
+                            This high-quality isometric view is ready to be shared with potential buyers.
+                        </p>
+                    </div>
+                </div>
+            ) : (
+                <div className="flex flex-col items-center text-gray-500">
+                    <BuildingOfficeIcon className="w-16 h-16 mb-4 opacity-50" />
+                    <p className="text-sm">Upload a blueprint to generate a 3D view.</p>
+                </div>
+            )}
+        </div>
+    );
+}
 
 interface PropertyEditorModalProps {
   isOpen: boolean;
@@ -469,6 +514,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
   
   // New state for Blueprint to 3D
   const [isGenerating3D, setIsGenerating3D] = React.useState(false);
+  const [activePreview, setActivePreview] = React.useState<'property' | 'blueprint'>('property');
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
   const formRef = React.useRef<HTMLFormElement | null>(null);
 
@@ -476,6 +522,10 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
     if (property) {
       setFormData({ ...property });
       setImagePreviewUrl(property.imageUrl || null);
+      if (property.blueprint3DUrl) {
+          // If editing a property that already has a 3D model, maybe show it?
+          // Keeping default as property for now.
+      }
     } else {
       setFormData({
         title: '',
@@ -496,6 +546,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
     }
     setImageFile(null); // Reset file on open
     setIsGenerating3D(false);
+    setActivePreview('property');
   }, [property, isOpen]);
 
   React.useEffect(() => {
@@ -537,36 +588,53 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
     if (e.target.files && e.target.files[0]) {
         const file = e.target.files[0];
         setIsGenerating3D(true);
-
-        const uploadFormData = new FormData();
-        uploadFormData.append('blueprint', file);
-        uploadFormData.append('userId', user.uid);
+        setActivePreview('blueprint'); // Auto-switch to blueprint view
 
         try {
-            // Placeholder webhook URL
-            const response = await fetch('https://n8n.sahaai.online/webhook/blueprint-to-3d', {
-                method: 'POST',
-                body: uploadFormData,
+            // Convert file to base64
+            const base64Data = await new Promise<string>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve((reader.result as string).split(',')[1]);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
             });
 
-            if (response.ok) {
-                const data = await response.json();
-                // Expecting { url: '...' } or { outputUrl: '...' } from webhook
-                const generatedUrl = data.url || data.outputUrl || '';
-                
-                if (generatedUrl) {
-                    setFormData(prev => ({ ...prev, blueprint3DUrl: generatedUrl }));
-                } else {
-                    console.warn("Webhook responded ok but no URL found in response.");
-                    alert("3D generation completed but no URL was returned.");
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            
+            // Use gemini-3-pro-image-preview as requested for high quality 3D render
+            const response = await ai.models.generateContent({
+                model: 'gemini-3-pro-image-preview',
+                contents: {
+                    parts: [
+                        { inlineData: { mimeType: file.type, data: base64Data } },
+                        { text: "Top-down, fully 3D isometric render of the entire floor plan. Create a clean, highly detailed miniature architectural maquette with accurate room proportions and layout, matching the reference exactly. Remove all text labels. Keep all walls, doors, furniture, appliances, and rooms properly placed. Use colorful, modern furniture and decorative objects in each room—sofas, beds, tables, cabinets, lamps, plants, rugs, appliances—arranged realistically and in scale. High-resolution, photorealistic materials (wood floors, tiles, fabrics, glass). Soft global lighting, subtle shadows, crisp edges. Professional, polished, high-quality output." }
+                    ]
                 }
-            } else {
-                console.error("Webhook failed:", response.status);
-                alert("Failed to generate 3D model. Please try again.");
+            });
+
+            // Extract image from response
+            let generatedImageBase64 = '';
+            if (response.candidates?.[0]?.content?.parts) {
+                for (const part of response.candidates[0].content.parts) {
+                    if (part.inlineData) {
+                        generatedImageBase64 = part.inlineData.data;
+                        break;
+                    }
+                }
             }
+
+            if (generatedImageBase64) {
+                const url = `data:image/png;base64,${generatedImageBase64}`;
+                setFormData(prev => ({ ...prev, blueprint3DUrl: url }));
+            } else {
+                console.warn("No image found in Gemini response", response);
+                alert("Generation complete, but no 3D image was returned by the model.");
+            }
+
         } catch (error) {
             console.error("Error generating 3D model:", error);
             alert("An error occurred while generating the 3D model.");
+            // Don't revert view, let user see error state or empty state in preview
         } finally {
             setIsGenerating3D(false);
             // Clear input so same file can be selected again if needed
@@ -656,7 +724,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
         </header>
 
         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 overflow-hidden">
-            <form ref={formRef} className="flex-1 flex flex-col overflow-hidden" noValidate>
+            <form ref={formRef} className="flex-1 flex flex-col overflow-hidden border-r border-gray-700" noValidate>
               <div className="flex-1 overflow-y-auto p-6 space-y-4 text-gray-300">
                 <div>
                   <label className="text-sm font-medium">Title</label>
@@ -787,9 +855,35 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                 </div>
               </div>
             </form>
-            <div className="bg-[#0D1117] p-6 hidden md:flex items-center justify-center border-l border-gray-700 overflow-hidden">
-                <div className="transform scale-90">
-                    <PropertyPreviewCard property={livePreviewData} />
+            
+            {/* Right Side Preview Panel */}
+            <div className="bg-[#0D1117] p-6 hidden md:flex flex-col items-center justify-start overflow-hidden">
+                {/* Preview Switcher Tabs */}
+                <div className="bg-gray-800 p-1 rounded-lg flex mb-6 w-full max-w-sm">
+                    <button 
+                        onClick={() => setActivePreview('property')}
+                        className={`flex-1 py-1.5 px-3 rounded-md text-xs font-semibold transition-all ${activePreview === 'property' ? 'bg-[#00FFC2] text-black shadow-sm' : 'text-gray-400 hover:text-white'}`}
+                    >
+                        Property Preview
+                    </button>
+                    <button 
+                        onClick={() => setActivePreview('blueprint')}
+                        className={`flex-1 py-1.5 px-3 rounded-md text-xs font-semibold transition-all ${activePreview === 'blueprint' ? 'bg-[#00FFC2] text-black shadow-sm' : 'text-gray-400 hover:text-white'}`}
+                    >
+                        Blueprint 3D Preview
+                    </button>
+                </div>
+
+                <div className="flex-1 w-full flex items-center justify-center">
+                    {activePreview === 'property' ? (
+                        <div className="transform scale-95 w-full h-full">
+                            <PropertyPreviewCard property={livePreviewData} />
+                        </div>
+                    ) : (
+                        <div className="transform scale-95 w-full h-full">
+                            <BlueprintPreviewCard imageUrl={formData.blueprint3DUrl} isGenerating={isGenerating3D} />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
