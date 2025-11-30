@@ -1,3 +1,4 @@
+
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
 import { Link } from 'react-router-dom';
@@ -149,10 +150,16 @@ const HomePage: React.FC<HomePageProps> = () => {
                     {/* AI Voice Website Widget Feature Showcase */}
                     <section className="py-16 md:py-24 border-b border-white/5">
                         <div className="container mx-auto px-4">
+                            {/* Mobile Title (visible on mobile only) */}
+                            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 lg:hidden">
+                                AI Voice Website Widget
+                            </h2>
+
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
                                 {/* Left Side: Text Content */}
                                 <div className="order-2 lg:order-1 animate-fade-in-up">
-                                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                                    {/* Desktop Title (hidden on mobile) */}
+                                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 hidden lg:block">
                                         AI Voice Website Widget
                                     </h2>
                                     <h3 className="text-xl font-semibold text-[#00FFC2] mb-4">
@@ -216,10 +223,16 @@ const HomePage: React.FC<HomePageProps> = () => {
                     {/* Auto-Personalized Sending Feature Showcase */}
                     <section className="py-16 md:py-24">
                         <div className="container mx-auto px-4">
+                            {/* Mobile Title (visible on mobile only) */}
+                            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 lg:hidden">
+                                Auto-Personalized Sending
+                            </h2>
+
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
                                 {/* Left Side: Text Content */}
                                 <div className="order-2 lg:order-1 animate-fade-in-up">
-                                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                                    {/* Desktop Title (hidden on mobile) */}
+                                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 hidden lg:block">
                                         Auto-Personalized Sending
                                     </h2>
                                     <h3 className="text-xl font-semibold text-[#00FFC2] mb-4">
@@ -270,10 +283,16 @@ const HomePage: React.FC<HomePageProps> = () => {
                     {/* Auto-Commenting DM Redirect Feature Showcase */}
                     <section className="py-16 md:py-24 bg-black/20">
                         <div className="container mx-auto px-4">
+                            {/* Mobile Title (visible on mobile only) */}
+                            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 lg:hidden">
+                                Auto-Commenting DM Redirect
+                            </h2>
+
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
                                 {/* Right Side: Text Content */}
                                 <div className="order-2 lg:order-2 animate-fade-in-up">
-                                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                                    {/* Desktop Title (hidden on mobile) */}
+                                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 hidden lg:block">
                                         Auto-Commenting DM Redirect
                                     </h2>
                                     <p className="text-xl text-gray-300 mb-8 leading-relaxed">
