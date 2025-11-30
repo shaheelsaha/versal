@@ -601,9 +601,9 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
 
             const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             
-            // Use gemini-3-pro-image-preview as requested for high quality 3D render
+            // Use gemini-2.5-flash-image (Nano Banana) as requested for fast 3D generation
             const response = await ai.models.generateContent({
-                model: 'gemini-3-pro-image-preview',
+                model: 'gemini-2.5-flash-image',
                 contents: {
                     parts: [
                         { inlineData: { mimeType: file.type, data: base64Data } },
@@ -888,7 +888,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
             </div>
         </div>
 
-        <footer className="p-4 bg-gray-800 border-t border-gray-700 flex justify-end space-x-2 flex-shrink-0">
+        <footer className="p-4 bg-gray-800 border-t border-gray-700 flex-shrink-0 flex justify-end space-x-2">
             <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium rounded-md border bg-gray-700 hover:bg-gray-600 text-white border-gray-600">
                 Cancel
             </button>
