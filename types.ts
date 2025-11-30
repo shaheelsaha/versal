@@ -53,6 +53,7 @@ export interface Property {
     createdAt: any; // Using any to avoid runtime import issues with firebase.firestore.Timestamp
     imageUrl?: string;
     propertyLink?: string;
+    blueprint3DUrl?: string;
 }
 
 // NEW TYPE: Analytics Data

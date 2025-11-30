@@ -22,7 +22,8 @@ import {
   CurrencyDollarIcon,
   AreaIcon,
   LinkIcon,
-  UploadIcon
+  UploadIcon,
+  SparklesIcon
 } from './icons';
 
 const PROPERTY_TYPES: PropertyType[] = ['Apartment', 'Villa', 'Townhouse', 'Penthouse', 'Duplex'];
@@ -403,6 +404,7 @@ const PropertyPreviewCard: React.FC<{ property: Partial<Property> }> = ({ proper
         area = 0,
         imageUrl,
         propertyLink,
+        blueprint3DUrl,
       } = property;
 
     return (
@@ -441,6 +443,12 @@ const PropertyPreviewCard: React.FC<{ property: Partial<Property> }> = ({ proper
                 </li>
             </ul>
         </div>
+        {blueprint3DUrl && (
+            <div className="mx-4 mb-4">
+                <p className="text-xs font-semibold text-gray-400 mb-2">3D Blueprint View</p>
+                <img src={blueprint3DUrl} alt="3D Blueprint" className="w-full h-32 object-cover rounded-lg border border-gray-700"/>
+            </div>
+        )}
       </div>
     );
 };
@@ -458,8 +466,11 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
   const [saving, setSaving] = React.useState(false);
   const [imageFile, setImageFile] = React.useState<File | null>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = React.useState<string | null>(null);
-  const formRef = React.useRef<HTMLFormElement | null>(null);
+  
+  // New state for Blueprint to 3D
+  const [isGenerating3D, setIsGenerating3D] = React.useState(false);
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+  const formRef = React.useRef<HTMLFormElement | null>(null);
 
   React.useEffect(() => {
     if (property) {
@@ -479,10 +490,12 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
         plan: '1 BHK',
         imageUrl: '',
         propertyLink: '',
+        blueprint3DUrl: '',
       });
       setImagePreviewUrl(null);
     }
     setImageFile(null); // Reset file on open
+    setIsGenerating3D(false);
   }, [property, isOpen]);
 
   React.useEffect(() => {
@@ -520,6 +533,52 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
     }
   };
 
+  const handleBlueprintUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+        const file = e.target.files[0];
+        setIsGenerating3D(true);
+
+        const uploadFormData = new FormData();
+        uploadFormData.append('blueprint', file);
+        uploadFormData.append('userId', user.uid);
+
+        try {
+            // Placeholder webhook URL
+            const response = await fetch('https://n8n.sahaai.online/webhook/blueprint-to-3d', {
+                method: 'POST',
+                body: uploadFormData,
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                // Expecting { url: '...' } or { outputUrl: '...' } from webhook
+                const generatedUrl = data.url || data.outputUrl || '';
+                
+                if (generatedUrl) {
+                    setFormData(prev => ({ ...prev, blueprint3DUrl: generatedUrl }));
+                } else {
+                    console.warn("Webhook responded ok but no URL found in response.");
+                    alert("3D generation completed but no URL was returned.");
+                }
+            } else {
+                console.error("Webhook failed:", response.status);
+                alert("Failed to generate 3D model. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error generating 3D model:", error);
+            alert("An error occurred while generating the 3D model.");
+        } finally {
+            setIsGenerating3D(false);
+            // Clear input so same file can be selected again if needed
+            e.target.value = '';
+        }
+    }
+  };
+
+  const removeBlueprint3D = () => {
+      setFormData(prev => ({ ...prev, blueprint3DUrl: '' }));
+  };
+
   const handleSaveClick = async () => {
     if (!formRef.current?.reportValidity()) return;
 
@@ -550,6 +609,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
             area: Number(formData.area) || 0,
             bedrooms: Number(formData.bedrooms) || 0,
             bathrooms: Number(formData.bathrooms) || 0,
+            blueprint3DUrl: formData.blueprint3DUrl || '',
         };
 
       if (property) {
@@ -635,6 +695,46 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                         </div>
                     </div>
                 </div>
+
+                {/* Blueprint to 3D Section */}
+                <div className="bg-gray-800/50 p-4 rounded-lg border border-gray-700">
+                    <label className="flex items-center text-sm font-medium text-white mb-2">
+                        <SparklesIcon className="w-4 h-4 mr-2 text-[#00FFC2]" />
+                        Blueprint to 3D
+                    </label>
+                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-600 border-dashed rounded-md bg-gray-900/50">
+                        <div className="space-y-1 text-center w-full">
+                            {isGenerating3D ? (
+                                <div className="flex flex-col items-center justify-center py-4">
+                                    <SpinnerIcon className="w-8 h-8 animate-spin text-[#00FFC2] mb-2" />
+                                    <p className="text-sm text-gray-300">Generating 3D model with AI...</p>
+                                </div>
+                            ) : formData.blueprint3DUrl ? (
+                                <div className="relative group w-full">
+                                    <img src={formData.blueprint3DUrl} alt="Generated 3D Model" className="mx-auto max-h-48 w-auto rounded-md shadow-sm border border-gray-700"/>
+                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button type="button" onClick={removeBlueprint3D} className="text-white bg-red-600 rounded-full p-2 hover:bg-red-700">
+                                            <TrashIcon className="w-5 h-5"/>
+                                        </button>
+                                    </div>
+                                    <p className="text-xs text-green-400 mt-2">3D Model Generated Successfully</p>
+                                </div>
+                            ) : (
+                                <>
+                                    <BuildingOfficeIcon className="mx-auto h-12 w-12 text-gray-500"/>
+                                    <div className="flex text-sm text-gray-400 justify-center">
+                                        <label htmlFor="blueprint-upload" className="relative cursor-pointer bg-gray-800 rounded-md font-medium text-teal-400 hover:text-teal-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-teal-500 focus-within:ring-offset-gray-900">
+                                            <span>Upload Blueprint</span>
+                                            <input id="blueprint-upload" name="blueprint-upload" type="file" className="sr-only" onChange={handleBlueprintUpload} accept="image/*" />
+                                        </label>
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-1">Upload a 2D floor plan to generate a 3D view.</p>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
                  <div>
                   <label className="text-sm font-medium">Property Link</label>
                   <input type="url" name="propertyLink" value={formData.propertyLink || ''} onChange={handleChange} placeholder="https://www.propertyfinder.ae/..." className={inputClasses}/>
