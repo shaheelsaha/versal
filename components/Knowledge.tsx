@@ -1,9 +1,8 @@
 
 import * as React from 'react';
-import { db, storage } from '../firebaseConfig';
+import { db, storage, functions } from '../firebaseConfig';
 import firebase from '../firebaseConfig';
 import { Property, PropertyType, PropertyStatus, PropertyPlan } from '../types';
-import { GoogleGenAI } from "@google/genai";
 import {
   PlusIcon,
   FilterIcon,
@@ -30,9 +29,6 @@ import {
 const PROPERTY_TYPES: PropertyType[] = ['Apartment', 'Villa', 'Townhouse', 'Penthouse', 'Duplex'];
 const PROPERTY_STATUSES: PropertyStatus[] = ['For Sale', 'For Rent', 'Sold', 'Rented'];
 const PROPERTY_PLANS: PropertyPlan[] = ['Studio', '1 BHK', '2 BHK', '3 BHK', '4+ BHK'];
-
-// Specific API Key for Nano Banana (Gemini) Image Generation
-const FALLBACK_KEY = 'AQ.Ab8RN6JXSGFK5B4XxcNS6jf272yRrqR1GLKxezTwxBH0f2nPuw';
 
 // Helper function to send webhook
 const sendPropertyWebhook = async (propertyData: Property, action: 'create' | 'update' | 'delete') => {
@@ -591,66 +587,43 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
     if (e.target.files && e.target.files[0]) {
         const file = e.target.files[0];
         
-        // Use environment variable safely if possible, but adhering to instructions to use process.env.API_KEY
-        // Fallback to provided key if env var is missing
-        const apiKey = process.env.API_KEY || FALLBACK_KEY;
-
-        if (!apiKey) {
-            alert("API Key is missing. Please check your configuration.");
-            return;
-        }
-
         setIsGenerating3D(true);
         setActivePreview('blueprint'); // Auto-switch to blueprint view
 
         try {
-            // Convert file to base64
+            // Convert file to Base64 string (stripping the data:image/...;base64, prefix)
             const base64Data = await new Promise<string>((resolve, reject) => {
                 const reader = new FileReader();
-                reader.onloadend = () => resolve((reader.result as string).split(',')[1]);
-                reader.onerror = reject;
                 reader.readAsDataURL(file);
+                reader.onload = () => {
+                    const result = reader.result as string;
+                    // Extract only the Base64 data
+                    const base64 = result.split(',')[1];
+                    resolve(base64);
+                };
+                reader.onerror = error => reject(error);
             });
 
-            const ai = new GoogleGenAI({ apiKey });
+            // Call the HTTPS Callable Cloud Function directly
+            // This function should accept { image: string } and return { image: string } (base64)
+            const generate3DPreview = functions.httpsCallable('generate3DPreview');
             
-            // Use gemini-2.5-flash-image (Nano Banana) as requested for fast 3D generation
-            const response = await ai.models.generateContent({
-                model: 'gemini-2.5-flash-image',
-                contents: [
-                    {
-                        role: 'user',
-                        parts: [
-                            { inlineData: { mimeType: file.type, data: base64Data } },
-                            { text: "Top-down, fully 3D isometric render of the entire floor plan. Create a clean, highly detailed miniature architectural maquette with accurate room proportions and layout, matching the reference exactly. Remove all text labels. Keep all walls, doors, furniture, appliances, and rooms properly placed. Use colorful, modern furniture and decorative objects in each room—sofas, beds, tables, cabinets, lamps, plants, rugs, appliances—arranged realistically and in scale. High-resolution, photorealistic materials (wood floors, tiles, fabrics, glass). Soft global lighting, subtle shadows, crisp edges. Professional, polished, high-quality output." }
-                        ]
-                    }
-                ]
-            });
-
-            // Extract image from response
-            let generatedImageBase64 = '';
-            if (response.candidates?.[0]?.content?.parts) {
-                for (const part of response.candidates[0].content.parts) {
-                    if (part.inlineData) {
-                        generatedImageBase64 = part.inlineData.data;
-                        break;
-                    }
-                }
-            }
-
-            if (generatedImageBase64) {
-                const url = `data:image/png;base64,${generatedImageBase64}`;
-                setFormData(prev => ({ ...prev, blueprint3DUrl: url }));
+            const result = await generate3DPreview({ image: base64Data });
+            
+            // Assume the function returns the base64 image string in result.data.image
+            const returnedBase64 = (result.data as any).image;
+            
+            if (returnedBase64) {
+                // Construct the data URL for display
+                const displayUrl = `data:image/png;base64,${returnedBase64}`;
+                setFormData(prev => ({ ...prev, blueprint3DUrl: displayUrl }));
             } else {
-                console.warn("No image found in Gemini response", response);
-                alert("Generation complete, but no 3D image was returned by the model.");
+                throw new Error("No image data returned from generation function.");
             }
 
         } catch (error: any) {
-            console.error("Error generating 3D model:", error);
+            console.error("Error generating 3D preview:", error);
             alert(`An error occurred while generating the 3D model: ${error.message || 'Unknown error'}`);
-            // Don't revert view, let user see error state or empty state in preview
         } finally {
             setIsGenerating3D(false);
             // Clear input so same file can be selected again if needed
@@ -683,6 +656,13 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
         }
 
         const { id, ...dataForFirestore } = formData;
+
+        // Note: For blueprint3DUrl, if it's a base64 string (from direct preview), 
+        // you might want to upload it to storage HERE before saving to Firestore to persist it properly.
+        // However, the prompt specifically requested "No file saving" for the preview generation flow.
+        // If the user saves the property, we will currently save the huge Base64 string to Firestore 
+        // unless we add logic here to upload it to Storage first. 
+        // Proceeding with saving as-is per current scope, but purely base64 in Firestore is not recommended for production.
 
         const dataToSave = {
             ...dataForFirestore,
