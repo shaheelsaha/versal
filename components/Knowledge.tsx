@@ -1,6 +1,6 @@
 
 import * as React from 'react';
-import { db, storage, functions } from '../firebaseConfig';
+import { db, storage } from '../firebaseConfig';
 import firebase from '../firebaseConfig';
 import { Property, PropertyType, PropertyStatus, PropertyPlan } from '../types';
 import {
@@ -587,7 +587,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
     if (e.target.files && e.target.files[0]) {
         const file = e.target.files[0];
         
-        // 1. Validate file size (limit to 10MB due to Cloud Function payload limits)
+        // 1. Validate file size (limit to 10MB due to webhook/payload limits)
         const MAX_SIZE_MB = 10;
         if (file.size > MAX_SIZE_MB * 1024 * 1024) {
             alert(`File is too large. Please upload an image smaller than ${MAX_SIZE_MB}MB.`);
@@ -625,23 +625,31 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
               reader.readAsDataURL(file);
             });
 
-            console.log("Sending payload to generate3DPreview:", { 
+            console.log("Sending payload to n8n webhook:", { 
                 imageLength: base64Data.length,
                 preview: base64Data.substring(0, 30) + "..."
             });
 
-            // Call the HTTPS Callable Cloud Function directly
-            const generate3DPreview = functions.httpsCallable("generate3DPreview");
-            const response = await generate3DPreview({ image: base64Data });
+            // Call the n8n webhook directly
+            const response = await fetch('https://n8n.sahaai.online/webhook/blueprint', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: base64Data })
+            });
 
-            console.log("Vertex AI result:", response.data);
-            const returnedBase64 = (response.data as any).image;
+            if (!response.ok) {
+                throw new Error(`Webhook failed: ${response.status} ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            // Assuming the webhook returns { image: "base64..." } or similar
+            const returnedBase64 = result.image; 
 
             if (returnedBase64) {
               const displayUrl = `data:image/png;base64,${returnedBase64}`;
               setFormData(prev => ({ ...prev, blueprint3DUrl: displayUrl }));
             } else {
-                throw new Error("No image data returned from generation function.");
+                throw new Error("No image data returned from webhook.");
             }
 
         } catch (error: any) {
@@ -680,13 +688,6 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
         }
 
         const { id, ...dataForFirestore } = formData;
-
-        // Note: For blueprint3DUrl, if it's a base64 string (from direct preview), 
-        // you might want to upload it to storage HERE before saving to Firestore to persist it properly.
-        // However, the prompt specifically requested "No file saving" for the preview generation flow.
-        // If the user saves the property, we will currently save the huge Base64 string to Firestore 
-        // unless we add logic here to upload it to Storage first. 
-        // Proceeding with saving as-is per current scope, but purely base64 in Firestore is not recommended for production.
 
         const dataToSave = {
             ...dataForFirestore,
