@@ -448,19 +448,31 @@ const PropertyPreviewCard: React.FC<{ property: Partial<Property> }> = ({ proper
     );
 };
 
-const BlueprintPreviewCard: React.FC<{ imageUrl?: string, isGenerating: boolean }> = ({ imageUrl, isGenerating }) => {
+const BlueprintPreviewCard: React.FC<{ imageUrl?: string, isGenerating: boolean, progress?: number }> = ({ imageUrl, isGenerating, progress = 0 }) => {
     return (
         <div className="bg-gray-800 rounded-xl shadow-lg border border-gray-700 w-full max-w-sm mx-auto font-sans h-full flex flex-col p-4 items-center justify-center text-center">
             {isGenerating ? (
-                <div className="flex flex-col items-center">
-                    <div className="relative w-20 h-20 mb-4">
+                <div className="flex flex-col items-center w-full max-w-xs px-2">
+                    <div className="relative w-20 h-20 mb-6">
                         <div className="absolute inset-0 rounded-full border-4 border-gray-700"></div>
-                        <div className="absolute inset-0 rounded-full border-4 border-t-[#00FFC2] animate-spin"></div>
+                        <div className="absolute inset-0 rounded-full border-4 border-t-[#00FFC2] animate-spin" style={{ animationDuration: '1s' }}></div>
                         <SparklesIcon className="absolute inset-0 m-auto w-8 h-8 text-[#00FFC2] animate-pulse" />
                     </div>
                     <h3 className="text-lg font-bold text-white mb-2">Generating 3D Model...</h3>
-                    <p className="text-sm text-gray-400 max-w-xs">
-                        Our AI is converting your blueprint into a photorealistic 3D isometric render. This may take a few seconds.
+                    
+                    <div className="w-full bg-gray-700 rounded-full h-2 mb-2 relative overflow-hidden">
+                        <div 
+                            className="bg-gradient-to-r from-teal-400 to-[#00FFC2] h-2 rounded-full transition-all duration-500 ease-out" 
+                            style={{ width: `${Math.round(progress)}%` }}
+                        ></div>
+                    </div>
+                    <div className="flex justify-between w-full text-xs text-gray-400 font-mono">
+                        <span>Processing</span>
+                        <span>{Math.round(progress)}%</span>
+                    </div>
+
+                    <p className="text-xs text-gray-500 mt-4 max-w-[240px] leading-relaxed">
+                        Analyzing blueprint geometry and rendering high-fidelity isometric view. This usually takes about 30 seconds.
                     </p>
                 </div>
             ) : imageUrl ? (
@@ -513,6 +525,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
   
   // New state for Blueprint to 3D
   const [isGenerating3D, setIsGenerating3D] = React.useState(false);
+  const [generationProgress, setGenerationProgress] = React.useState(0);
   const [activePreview, setActivePreview] = React.useState<'property' | 'blueprint'>('property');
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
   const formRef = React.useRef<HTMLFormElement | null>(null);
@@ -545,6 +558,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
     }
     setImageFile(null); // Reset file on open
     setIsGenerating3D(false);
+    setGenerationProgress(0);
     setActivePreview('property');
   }, [property, isOpen]);
 
@@ -597,6 +611,16 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
 
         setIsGenerating3D(true);
         setActivePreview('blueprint'); // Auto-switch to blueprint view
+        setGenerationProgress(0);
+
+        // Simulate progress: 0 -> 90% over approx 30 seconds
+        const progressInterval = setInterval(() => {
+            setGenerationProgress(prev => {
+                if (prev >= 90) return 90; // Stall at 90% until request finishes
+                // Add random increment between 0.5 and 2.5
+                return prev + Math.random() * 2 + 0.5;
+            });
+        }, 500);
 
         try {
             // 2. Robust Base64 extraction
@@ -645,6 +669,13 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
             // Assuming the webhook returns { image: "base64..." } or similar
             const returnedBase64 = result.image; 
 
+            // Complete the progress bar
+            clearInterval(progressInterval);
+            setGenerationProgress(100);
+            
+            // Allow user to see 100% for a moment
+            await new Promise(r => setTimeout(r, 600));
+
             if (returnedBase64) {
               const displayUrl = `data:image/png;base64,${returnedBase64}`;
               setFormData(prev => ({ ...prev, blueprint3DUrl: displayUrl }));
@@ -656,7 +687,9 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
             console.error("Error generating 3D preview:", error);
             // Display exact error from backend if available (e.g., validation message)
             alert(`Error generating 3D model: ${error.message || 'Unknown error'}`);
+            setGenerationProgress(0);
         } finally {
+            clearInterval(progressInterval);
             setIsGenerating3D(false);
             // Clear input so same file can be selected again if needed
             e.target.value = '';
@@ -796,7 +829,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                             {isGenerating3D ? (
                                 <div className="flex flex-col items-center justify-center py-4">
                                     <SpinnerIcon className="w-8 h-8 animate-spin text-[#00FFC2] mb-2" />
-                                    <p className="text-sm text-gray-300">Generating 3D model with AI...</p>
+                                    <p className="text-sm text-gray-300">Generating 3D model with AI... ({Math.round(generationProgress)}%)</p>
                                 </div>
                             ) : formData.blueprint3DUrl ? (
                                 <div className="relative group w-full">
@@ -902,7 +935,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                         </div>
                     ) : (
                         <div className="transform scale-95 w-full h-full">
-                            <BlueprintPreviewCard imageUrl={formData.blueprint3DUrl} isGenerating={isGenerating3D} />
+                            <BlueprintPreviewCard imageUrl={formData.blueprint3DUrl} isGenerating={isGenerating3D} progress={generationProgress} />
                         </div>
                     )}
                 </div>
