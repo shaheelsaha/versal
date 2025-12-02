@@ -632,12 +632,10 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
 
             // Call the HTTPS Callable Cloud Function directly
             const generate3DPreview = functions.httpsCallable("generate3DPreview");
+            const response = await generate3DPreview({ image: base64Data });
 
-            // Sending as { image: base64 } matching the error requirement
-            const result = await generate3DPreview({ image: base64Data });
-
-            console.log("Vertex AI result:", result.data);
-            const returnedBase64 = (result.data as any).image;
+            console.log("Vertex AI result:", response.data);
+            const returnedBase64 = (response.data as any).image;
 
             if (returnedBase64) {
               const displayUrl = `data:image/png;base64,${returnedBase64}`;
