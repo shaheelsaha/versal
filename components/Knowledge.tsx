@@ -636,6 +636,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
             // Sending as { image: base64 } matching the error requirement
             const result = await generate3DPreview({ image: base64Data });
 
+            console.log("Vertex AI result:", result.data);
             const returnedBase64 = (result.data as any).image;
 
             if (returnedBase64) {
