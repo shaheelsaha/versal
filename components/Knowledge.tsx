@@ -593,15 +593,26 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
         try {
             // Convert file to Base64 string (stripping the data:image/...;base64, prefix)
             const base64Data = await new Promise<string>((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => {
-                    const result = reader.result as string;
-                    // Extract only the Base64 data
-                    const base64 = result.split(',')[1];
-                    resolve(base64);
-                };
-                reader.onerror = error => reject(error);
+              const reader = new FileReader();
+              reader.onload = () => {
+                try {
+                  const result = reader.result;
+                  if (!result || typeof result !== "string") {
+                    return reject("Invalid image result");
+                  }
+                  const base64 = result.split(",")[1];
+                  if (!base64) return reject("Could not extract base64");
+                  resolve(base64);
+                } catch (err) {
+                  reject(err);
+                }
+              };
+              reader.onerror = reject;
+              reader.readAsDataURL(file);
+            });
+
+            console.log("Sending to Cloud Function:", {
+              image: base64Data ? base64Data.substring(0, 30) + "..." : null
             });
 
             // Call the HTTPS Callable Cloud Function directly
