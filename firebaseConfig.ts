@@ -1,4 +1,3 @@
-
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
@@ -23,7 +22,10 @@ if (!firebase.apps.length) {
 export const auth = firebase.auth();
 export const db = firebase.firestore();
 export const storage = firebase.storage();
-export const functions = firebase.functions();
+
+// THE FIX — CORRECT REGION
+export const functions = firebase.app().functions("us-central1");
+
 export const googleProvider = new firebase.auth.GoogleAuthProvider();
 
 export default firebase;
