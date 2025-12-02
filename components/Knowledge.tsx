@@ -666,8 +666,15 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
             }
 
             const result = await response.json();
-            // Assuming the webhook returns { image: "base64..." } or similar
-            const returnedBase64 = result.image; 
+            
+            // Handle response format: [{ "data": "base64..." }]
+            let returnedBase64: string | undefined;
+            if (Array.isArray(result) && result.length > 0) {
+                returnedBase64 = result[0].data;
+            } else if (result && typeof result === 'object') {
+                // Fallback for single object { image: "...", data: "..." }
+                returnedBase64 = result.image || result.data;
+            }
 
             // Complete the progress bar
             clearInterval(progressInterval);
