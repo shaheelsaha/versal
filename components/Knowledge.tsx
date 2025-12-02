@@ -665,16 +665,22 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                 throw new Error(`Webhook failed: ${response.status} ${response.statusText}`);
             }
 
-            const result = await response.json();
+            // NEW: Handle binary blob response
+            const blob = await response.blob();
             
-            // Handle response format: [{ "data": "base64..." }]
-            let returnedBase64: string | undefined;
-            if (Array.isArray(result) && result.length > 0) {
-                returnedBase64 = result[0].data;
-            } else if (result && typeof result === 'object') {
-                // Fallback for single object { image: "...", data: "..." }
-                returnedBase64 = result.image || result.data;
-            }
+            // Convert binary blob to Base64 Data URL for preview and saving
+            const displayUrl = await new Promise<string>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    if (typeof reader.result === 'string') {
+                        resolve(reader.result);
+                    } else {
+                        reject(new Error("Failed to convert response blob to base64 string"));
+                    }
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
 
             // Complete the progress bar
             clearInterval(progressInterval);
@@ -683,11 +689,10 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
             // Allow user to see 100% for a moment
             await new Promise(r => setTimeout(r, 600));
 
-            if (returnedBase64) {
-              const displayUrl = `data:image/png;base64,${returnedBase64}`;
+            if (displayUrl) {
               setFormData(prev => ({ ...prev, blueprint3DUrl: displayUrl }));
             } else {
-                throw new Error("No image data returned from webhook.");
+                throw new Error("No valid image data returned from webhook.");
             }
 
         } catch (error: any) {
