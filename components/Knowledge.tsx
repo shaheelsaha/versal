@@ -587,37 +587,53 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
     if (e.target.files && e.target.files[0]) {
         const file = e.target.files[0];
         
+        // 1. Validate file size (limit to 10MB due to Cloud Function payload limits)
+        const MAX_SIZE_MB = 10;
+        if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+            alert(`File is too large. Please upload an image smaller than ${MAX_SIZE_MB}MB.`);
+            e.target.value = ''; // Clear input
+            return;
+        }
+
         setIsGenerating3D(true);
         setActivePreview('blueprint'); // Auto-switch to blueprint view
 
         try {
-            // Convert file to Base64 string (stripping the data:image/...;base64, prefix)
+            // 2. Robust Base64 extraction
             const base64Data = await new Promise<string>((resolve, reject) => {
               const reader = new FileReader();
               reader.onload = () => {
                 try {
                   const result = reader.result;
                   if (!result || typeof result !== "string") {
-                    return reject("Invalid image result");
+                    return reject(new Error("Invalid image result from FileReader"));
                   }
-                  const base64 = result.split(",")[1];
-                  if (!base64) return reject("Could not extract base64");
+                  // result is "data:image/png;base64,....."
+                  const parts = result.split(",");
+                  // If for some reason the prefix is missing, handle gracefully (though readAsDataURL usually guarantees it)
+                  const base64 = parts.length > 1 ? parts[1] : parts[0]; 
+                  
+                  if (!base64 || base64.trim().length === 0) {
+                      return reject(new Error("Extracted Base64 string is empty"));
+                  }
                   resolve(base64);
                 } catch (err) {
                   reject(err);
                 }
               };
-              reader.onerror = reject;
+              reader.onerror = () => reject(new Error("FileReader error"));
               reader.readAsDataURL(file);
             });
 
-            console.log("Sending to Cloud Function:", {
-              image: base64Data ? base64Data.substring(0, 30) + "..." : null
+            console.log("Sending payload to generate3DPreview:", { 
+                imageLength: base64Data.length,
+                preview: base64Data.substring(0, 30) + "..."
             });
 
             // Call the HTTPS Callable Cloud Function directly
             const generate3DPreview = functions.httpsCallable("generate3DPreview");
 
+            // Sending as { image: base64 } matching the error requirement
             const result = await generate3DPreview({ image: base64Data });
 
             const returnedBase64 = (result.data as any).image;
@@ -625,11 +641,14 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
             if (returnedBase64) {
               const displayUrl = `data:image/png;base64,${returnedBase64}`;
               setFormData(prev => ({ ...prev, blueprint3DUrl: displayUrl }));
+            } else {
+                throw new Error("No image data returned from generation function.");
             }
 
         } catch (error: any) {
             console.error("Error generating 3D preview:", error);
-            alert(`An error occurred while generating the 3D model: ${error.message || 'Unknown error'}`);
+            // Display exact error from backend if available (e.g., validation message)
+            alert(`Error generating 3D model: ${error.message || 'Unknown error'}`);
         } finally {
             setIsGenerating3D(false);
             // Clear input so same file can be selected again if needed
