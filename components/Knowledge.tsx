@@ -605,21 +605,15 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
             });
 
             // Call the HTTPS Callable Cloud Function directly
-            // This function should accept { image: string } and return { image: string } (base64)
-            // UPDATED: Function name changed to generate3DFloorPlan
-            const generate3DFloorPlan = functions.httpsCallable('generate3DFloorPlan');
-            
-            const result = await generate3DFloorPlan({ image: base64Data });
-            
-            // Assume the function returns the base64 image string in result.data.image
+            const generate3DPreview = functions.httpsCallable("generate3DPreview");
+
+            const result = await generate3DPreview({ image: base64Data });
+
             const returnedBase64 = (result.data as any).image;
-            
+
             if (returnedBase64) {
-                // Construct the data URL for display
-                const displayUrl = `data:image/png;base64,${returnedBase64}`;
-                setFormData(prev => ({ ...prev, blueprint3DUrl: displayUrl }));
-            } else {
-                throw new Error("No image data returned from generation function.");
+              const displayUrl = `data:image/png;base64,${returnedBase64}`;
+              setFormData(prev => ({ ...prev, blueprint3DUrl: displayUrl }));
             }
 
         } catch (error: any) {
