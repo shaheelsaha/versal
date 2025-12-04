@@ -265,7 +265,7 @@ const PropertyEditor: React.FC<PropertyEditorProps> = ({ user, property, onClose
                 });
 
                 // 2. Call Webhook
-                const response = await fetch('https://n8n.sahaai.online/webhook/blueprint', {
+                const response = await fetch('https://n8n.sahaai.online/webhook/2d', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
