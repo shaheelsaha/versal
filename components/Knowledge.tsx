@@ -7,7 +7,8 @@ import {
     PlusIcon, EditIcon, TrashIcon, XIcon, SpinnerIcon, 
     UploadIcon, BuildingOfficeIcon, LocationIcon, 
     CurrencyDollarIcon, BedIcon, BathIcon, AreaIcon, 
-    LinkIcon, SparklesIcon, CheckCircleIcon 
+    LinkIcon, SparklesIcon, CheckCircleIcon,
+    DownloadIcon
 } from './icons';
 
 interface KnowledgeProps {
@@ -100,7 +101,13 @@ const PropertyPreviewCard: React.FC<{ property: Partial<Property> }> = ({ proper
     );
 };
 
-const BlueprintPreviewCard: React.FC<{ imageUrl?: string, isGenerating: boolean, progress?: number }> = ({ imageUrl, isGenerating, progress = 0 }) => {
+const BlueprintPreviewCard: React.FC<{ 
+    imageUrl?: string, 
+    isGenerating: boolean, 
+    progress?: number,
+    onFullView?: (url: string) => void,
+    onDownload?: (url: string) => void
+}> = ({ imageUrl, isGenerating, progress = 0, onFullView, onDownload }) => {
     return (
         <div className="bg-gray-800 rounded-xl shadow-lg border border-gray-700 w-full max-w-sm mx-auto font-sans h-full flex flex-col p-4 items-center justify-center text-center">
             {isGenerating ? (
@@ -124,17 +131,40 @@ const BlueprintPreviewCard: React.FC<{ imageUrl?: string, isGenerating: boolean,
                     </div>
 
                     <p className="text-xs text-gray-500 mt-4 max-w-[240px] leading-relaxed">
-                        Our AI is converting your blueprint into a photorealistic 3D isometric render. This may take a few seconds.
+                        Our AI is converting your blueprint into a photorealistic 3D isometric render. This may take around 50 seconds.
                     </p>
                 </div>
             ) : imageUrl ? (
-                <div className="w-full h-full flex flex-col">
+                <div className="w-full h-full flex flex-col group relative">
                     <div className="flex-1 relative rounded-lg overflow-hidden border border-gray-600 bg-black">
                         <img 
                             src={imageUrl} 
                             alt="Generated 3D Model" 
                             className="w-full h-full object-contain"
                         />
+                        {/* Overlay with buttons */}
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-3">
+                            {onFullView && (
+                                <button 
+                                    onClick={() => onFullView(imageUrl)} 
+                                    type="button"
+                                    className="p-2 bg-gray-800 text-white rounded-full hover:bg-[#00FFC2] hover:text-black transition-colors shadow-lg border border-white/10"
+                                    title="Full View"
+                                >
+                                    <AreaIcon className="w-5 h-5" /> 
+                                </button>
+                            )}
+                            {onDownload && (
+                                <button 
+                                    onClick={() => onDownload(imageUrl)} 
+                                    type="button"
+                                    className="p-2 bg-gray-800 text-white rounded-full hover:bg-[#00FFC2] hover:text-black transition-colors shadow-lg border border-white/10"
+                                    title="Download"
+                                >
+                                    <DownloadIcon className="w-5 h-5" />
+                                </button>
+                            )}
+                        </div>
                     </div>
                     <div className="mt-4 text-left">
                         <h4 className="text-white font-semibold flex items-center">
@@ -187,6 +217,7 @@ const PropertyEditor: React.FC<PropertyEditorProps> = ({ user, property, onClose
     const [imageFile, setImageFile] = React.useState<File | null>(null);
     const [imagePreviewUrl, setImagePreviewUrl] = React.useState<string | null>(null);
     const [activePreview, setActivePreview] = React.useState<'property' | 'blueprint'>('property');
+    const [fullViewUrl, setFullViewUrl] = React.useState<string | null>(null);
     
     // Generation & Saving State
     const [isGenerating3D, setIsGenerating3D] = React.useState(false);
@@ -242,16 +273,19 @@ const PropertyEditor: React.FC<PropertyEditorProps> = ({ user, property, onClose
             setActivePreview('blueprint');
             setGenerationProgress(0);
 
-            // Simulation: 0 -> 90% over ~30 seconds
+            // Simulation: 0 -> 100% over ~50 seconds
+            // 50 seconds = 50,000ms. 
+            // Update every 500ms -> 100 steps.
+            // Increment 1% per step.
             const progressInterval = setInterval(() => {
                 setGenerationProgress(prev => {
-                    if (prev >= 90) return 90;
-                    return prev + (100 / 60); // approx increment
+                    if (prev >= 98) return 98;
+                    return prev + 1;
                 });
             }, 500);
 
             try {
-                // 1. Convert to Base64
+                // 1. Convert to Base64 for payload
                 const base64Data = await new Promise<string>((resolve, reject) => {
                     const reader = new FileReader();
                     reader.onload = () => {
@@ -280,13 +314,16 @@ const PropertyEditor: React.FC<PropertyEditorProps> = ({ user, property, onClose
 
                 if (!response.ok) throw new Error("Webhook generation failed");
 
-                // 3. Handle Base64 Response (Assuming webhook returns plain text base64 string)
-                const responseText = await response.text();
-                // Clean response if it contains quotes or newlines
-                const cleanBase64 = responseText.replace(/['"]+/g, '').trim();
+                // 3. Handle Binary Response (Blob)
+                const blob = await response.blob();
                 
-                // Construct Data URL
-                const displayUrl = `data:image/png;base64,${cleanBase64}`;
+                // Convert blob to Data URL for display and saving logic
+                const responseBase64 = await new Promise<string>((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result as string);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                });
 
                 clearInterval(progressInterval);
                 setGenerationProgress(100);
@@ -294,7 +331,7 @@ const PropertyEditor: React.FC<PropertyEditorProps> = ({ user, property, onClose
                 // Slight delay to show 100%
                 await new Promise(r => setTimeout(r, 500));
                 
-                setFormData(prev => ({ ...prev, blueprint3DUrl: displayUrl }));
+                setFormData(prev => ({ ...prev, blueprint3DUrl: responseBase64 }));
 
             } catch (error) {
                 console.error("3D Generation Error:", error);
@@ -306,6 +343,15 @@ const PropertyEditor: React.FC<PropertyEditorProps> = ({ user, property, onClose
                 e.target.value = '';
             }
         }
+    };
+
+    const handleDownloadBlueprint = (url: string) => {
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `blueprint-3d-${Date.now()}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     const handleSaveClick = async () => {
@@ -549,6 +595,8 @@ const PropertyEditor: React.FC<PropertyEditorProps> = ({ user, property, onClose
                                         imageUrl={formData.blueprint3DUrl} 
                                         isGenerating={isGenerating3D} 
                                         progress={generationProgress}
+                                        onFullView={setFullViewUrl}
+                                        onDownload={handleDownloadBlueprint}
                                     />
                                 </div>
                             )}
@@ -571,109 +619,77 @@ const PropertyEditor: React.FC<PropertyEditorProps> = ({ user, property, onClose
                     </button>
                 </div>
             </div>
+
+            {/* Full View Modal */}
+            {fullViewUrl && (
+                <div className="fixed inset-0 bg-black/95 z-[60] flex items-center justify-center p-4 backdrop-blur-md" onClick={() => setFullViewUrl(null)}>
+                    <button className="absolute top-4 right-4 text-white hover:text-gray-300 p-2" onClick={() => setFullViewUrl(null)}>
+                        <XIcon className="w-8 h-8" />
+                    </button>
+                    <img src={fullViewUrl} alt="Full View" className="max-w-full max-h-full object-contain rounded-lg shadow-2xl" onClick={e => e.stopPropagation()}/>
+                    <div className="absolute bottom-6 flex space-x-4" onClick={e => e.stopPropagation()}>
+                        <button 
+                            onClick={() => handleDownloadBlueprint(fullViewUrl)}
+                            className="flex items-center px-4 py-2 bg-[#00FFC2] text-black font-bold rounded-full hover:bg-teal-300 transition-colors shadow-lg"
+                        >
+                            <DownloadIcon className="w-5 h-5 mr-2" /> Download
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
-
-// --- Main Knowledge Component ---
-
-const PropertyCard: React.FC<{ property: Property, onEdit: (p: Property) => void, onDelete: (p: Property) => void }> = ({ property, onEdit, onDelete }) => (
-    <div className="bg-gray-900/50 border border-white/10 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 group">
-        <div className="relative h-48 bg-gray-800">
-            {property.imageUrl ? (
-                <img src={property.imageUrl} alt={property.title} className="w-full h-full object-cover" />
-            ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-600">
-                    <BuildingOfficeIcon className="w-12 h-12 opacity-50" />
-                </div>
-            )}
-            <div className="absolute top-2 right-2 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onClick={(e) => { e.stopPropagation(); onEdit(property); }} className="p-2 bg-gray-900/90 text-white rounded-full hover:bg-[#00FFC2] hover:text-black transition-colors shadow-md">
-                    <EditIcon className="w-4 h-4" />
-                </button>
-                <button onClick={(e) => { e.stopPropagation(); onDelete(property); }} className="p-2 bg-gray-900/90 text-white rounded-full hover:bg-red-500 hover:text-white transition-colors shadow-md">
-                    <TrashIcon className="w-4 h-4" />
-                </button>
-            </div>
-            <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded text-xs text-white font-medium border border-white/10">
-                {property.status}
-            </div>
-        </div>
-        <div className="p-4">
-            <h3 className="text-lg font-bold text-white truncate">{property.title}</h3>
-            <p className="text-sm text-gray-400 flex items-center mt-1 truncate">
-                <LocationIcon className="w-4 h-4 mr-1 text-gray-500" /> {property.location}
-            </p>
-            <div className="flex items-center justify-between mt-4 text-sm text-gray-300">
-                <div className="flex items-center" title="Price">
-                    <span className="font-bold text-[#00FFC2]">{property.currency} {property.price.toLocaleString()}</span>
-                </div>
-                <div className="flex space-x-3 text-xs text-gray-500">
-                     <span className="flex items-center"><BedIcon className="w-3.5 h-3.5 mr-1"/> {property.bedrooms}</span>
-                     <span className="flex items-center"><BathIcon className="w-3.5 h-3.5 mr-1"/> {property.bathrooms}</span>
-                     <span className="flex items-center"><AreaIcon className="w-3.5 h-3.5 mr-1"/> {property.area}</span>
-                </div>
-            </div>
-        </div>
-    </div>
-);
 
 const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
     const [properties, setProperties] = React.useState<Property[]>([]);
     const [loading, setLoading] = React.useState(true);
     const [editorOpen, setEditorOpen] = React.useState(false);
-    const [selectedProperty, setSelectedProperty] = React.useState<Property | null>(null);
+    const [editingProperty, setEditingProperty] = React.useState<Property | null>(null);
     const [message, setMessage] = React.useState<{ type: 'success' | 'error', text: string } | null>(null);
 
     React.useEffect(() => {
+        setLoading(true);
         const unsubscribe = db.collection('users').doc(user.uid).collection('Property_details')
             .orderBy('createdAt', 'desc')
             .onSnapshot(snapshot => {
-                const props = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                })) as Property[];
+                const props = snapshot.docs.map(doc => ({ 
+                    id: doc.id, 
+                    ...doc.data() 
+                } as Property));
                 setProperties(props);
                 setLoading(false);
             }, err => {
-                console.error("Error fetching properties", err);
+                console.error("Fetch error", err);
                 setLoading(false);
             });
         return () => unsubscribe();
     }, [user.uid]);
 
-    const handleAddClick = () => {
-        setSelectedProperty(null);
+    const handleAdd = () => {
+        setEditingProperty(null);
         setEditorOpen(true);
     };
 
-    const handleEditClick = (property: Property) => {
-        setSelectedProperty(property);
+    const handleEdit = (property: Property) => {
+        setEditingProperty(property);
         setEditorOpen(true);
     };
 
-    const handleDeleteClick = async (property: Property) => {
-        if (!window.confirm("Are you sure you want to delete this property?")) return;
+    const handleDelete = async (id: string) => {
+        if (!window.confirm("Delete this property?")) return;
         try {
-            await db.collection('users').doc(user.uid).collection('Property_details').doc(property.id).delete();
-            if (property.imageUrl && property.imageUrl.startsWith('http')) {
-                storage.refFromURL(property.imageUrl).delete().catch(console.warn);
-            }
-            if (property.blueprint3DUrl && property.blueprint3DUrl.startsWith('http')) {
-                storage.refFromURL(property.blueprint3DUrl).delete().catch(console.warn);
-            }
-             await sendPropertyWebhook(property, 'delete');
-            setMessage({ type: 'success', text: 'Property deleted successfully.' });
-        } catch (error) {
-            console.error("Delete failed", error);
-            setMessage({ type: 'error', text: 'Failed to delete property.' });
+            await db.collection('users').doc(user.uid).collection('Property_details').doc(id).delete();
+            // Trigger webhook for sync
+            await sendPropertyWebhook({ id } as Property, 'delete');
+        } catch (e) {
+            console.error(e);
+            alert("Failed to delete");
         }
-        setTimeout(() => setMessage(null), 3000);
     };
 
     const handleSaveSuccess = (msg: string) => {
         setMessage({ type: 'success', text: msg });
-        setEditorOpen(false);
         setTimeout(() => setMessage(null), 3000);
     };
 
@@ -682,42 +698,55 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
             <div className="flex justify-between items-center mb-6">
                 <div>
                     <h1 className="text-3xl font-bold text-white">Knowledge Base</h1>
-                    <p className="text-gray-400 mt-1">Manage your property portfolio. The AI uses this data to answer queries.</p>
+                    <p className="text-gray-400 mt-1">Manage your property portfolio and 3D blueprints.</p>
                 </div>
-                <button onClick={handleAddClick} className="bg-[#00FFC2] text-black font-bold py-2.5 px-4 rounded-lg hover:bg-teal-300 transition-colors flex items-center shadow-lg shadow-teal-500/20">
-                    <PlusIcon className="w-5 h-5 mr-2" />
-                    Add Property
+                <button onClick={handleAdd} className="bg-[#00FFC2] text-black px-4 py-2 rounded-lg font-bold flex items-center hover:bg-teal-300 transition-colors shadow-lg shadow-teal-500/20">
+                    <PlusIcon className="w-5 h-5 mr-2" /> Add Property
                 </button>
             </div>
 
             {message && (
-                <div className={`mb-4 p-4 rounded-lg ${message.type === 'success' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
+                <div className={`mb-4 p-4 rounded-lg text-sm flex items-center ${message.type === 'success' ? 'bg-green-900/50 text-green-300 border border-green-800' : 'bg-red-900/50 text-red-300 border border-red-800'}`}>
+                    {message.type === 'success' && <CheckCircleIcon className="w-5 h-5 mr-2" />}
                     {message.text}
                 </div>
             )}
 
             {loading ? (
                 <div className="flex-1 flex justify-center items-center">
-                    <SpinnerIcon className="w-12 h-12 animate-spin text-[#00FFC2]" />
+                    <SpinnerIcon className="w-12 h-12 text-[#00FFC2] animate-spin" />
                 </div>
             ) : properties.length === 0 ? (
-                <div className="flex-1 flex flex-col justify-center items-center text-center p-12 bg-gray-900/30 border border-white/5 rounded-2xl border-dashed">
-                    <BuildingOfficeIcon className="w-16 h-16 text-gray-600 mb-4" />
-                    <h3 className="text-xl font-bold text-gray-300">No properties yet</h3>
-                    <p className="text-gray-500 mt-2 mb-6 max-w-md">Add your properties here so the AI Agent can recommend them to potential leads.</p>
-                    <button onClick={handleAddClick} className="bg-gray-800 text-white font-medium py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors">
-                        Add Your First Property
-                    </button>
+                <div className="flex-1 flex flex-col justify-center items-center text-gray-500 border-2 border-dashed border-gray-800 rounded-xl p-12 bg-gray-900/30">
+                    <BuildingOfficeIcon className="w-16 h-16 mb-4 opacity-30" />
+                    <p className="text-lg font-medium text-gray-400">No properties found</p>
+                    <p className="text-sm mb-6">Add your first property to get started with automation.</p>
+                    <button onClick={handleAdd} className="text-[#00FFC2] hover:underline">Add Property</button>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {properties.map(prop => (
-                        <PropertyCard 
-                            key={prop.id} 
-                            property={prop} 
-                            onEdit={handleEditClick} 
-                            onDelete={handleDeleteClick} 
-                        />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20">
+                    {properties.map(property => (
+                        <div key={property.id} className="relative group">
+                            <PropertyPreviewCard property={property} />
+                            
+                            {/* Actions Overlay */}
+                            <div className="absolute top-3 right-3 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button 
+                                    onClick={() => handleEdit(property)} 
+                                    className="p-2 bg-gray-900 text-white rounded-full shadow-lg border border-gray-700 hover:bg-[#00FFC2] hover:text-black hover:border-[#00FFC2] transition-colors"
+                                    title="Edit"
+                                >
+                                    <EditIcon className="w-4 h-4" />
+                                </button>
+                                <button 
+                                    onClick={() => handleDelete(property.id)} 
+                                    className="p-2 bg-gray-900 text-white rounded-full shadow-lg border border-gray-700 hover:bg-red-500 hover:border-red-500 transition-colors"
+                                    title="Delete"
+                                >
+                                    <TrashIcon className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
                     ))}
                 </div>
             )}
@@ -725,7 +754,7 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
             {editorOpen && (
                 <PropertyEditor 
                     user={user} 
-                    property={selectedProperty} 
+                    property={editingProperty} 
                     onClose={() => setEditorOpen(false)} 
                     onSaveSuccess={handleSaveSuccess}
                 />
