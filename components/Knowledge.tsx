@@ -695,7 +695,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
             });
 
             // Call the n8n webhook directly
-            const response = await fetch('https://n8n.sahaai.online/webhook/blueprint', {
+            const response = await fetch('https://n8n.sahaai.online/webhook/2d', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
