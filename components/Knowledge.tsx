@@ -772,6 +772,31 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
             finalImageUrl = '';
         }
 
+        // --- NEW: Blueprint 3D Logic ---
+        let finalBlueprintUrl = formData.blueprint3DUrl || '';
+        
+        // Check if it's a Base64 string (newly generated)
+        if (finalBlueprintUrl.startsWith('data:')) {
+            // Delete old blueprint if exists (cleanup)
+            if (property?.blueprint3DUrl && property.blueprint3DUrl.startsWith('http')) {
+                 try { await storage.refFromURL(property.blueprint3DUrl).delete(); } catch (e) { console.warn("Old blueprint deletion failed:", e); }
+            }
+
+            // Convert Base64 to Blob
+            const res = await fetch(finalBlueprintUrl);
+            const blob = await res.blob();
+            
+            // Upload to Firebase Storage (using same path structure as main images)
+            const filename = `${Date.now()}_blueprint_3d.png`;
+            const storageRef = storage.ref(`posts/${user.uid}/${filename}`);
+            await storageRef.put(blob);
+            finalBlueprintUrl = await storageRef.getDownloadURL();
+
+        } else if (!finalBlueprintUrl && property?.blueprint3DUrl) {
+            // Removed existing blueprint
+            try { await storage.refFromURL(property.blueprint3DUrl).delete(); } catch (e) { console.warn("Old blueprint deletion failed:", e); }
+        }
+
         const { id, ...dataForFirestore } = formData;
 
         const dataToSave = {
@@ -783,7 +808,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
             area: Number(formData.area) || 0,
             bedrooms: Number(formData.bedrooms) || 0,
             bathrooms: Number(formData.bathrooms) || 0,
-            blueprint3DUrl: formData.blueprint3DUrl || '',
+            blueprint3DUrl: finalBlueprintUrl,
         };
 
       if (property) {
