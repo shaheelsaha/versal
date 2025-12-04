@@ -448,7 +448,7 @@ const PropertyPreviewCard: React.FC<{ property: Partial<Property> }> = ({ proper
     );
 };
 
-const BlueprintPreviewCard: React.FC<{ imageUrl?: string, isGenerating: boolean, progress?: number }> = ({ imageUrl, isGenerating, progress = 0 }) => {
+const BlueprintPreviewCard: React.FC<{ imageUrl?: string, isGenerating: boolean, progress?: number, onExpand?: () => void, onDownload?: () => void }> = ({ imageUrl, isGenerating, progress = 0, onExpand, onDownload }) => {
     return (
         <div className="bg-gray-800 rounded-xl shadow-lg border border-gray-700 w-full max-w-sm mx-auto font-sans h-full flex flex-col p-4 items-center justify-center text-center">
             {isGenerating ? (
@@ -483,10 +483,21 @@ const BlueprintPreviewCard: React.FC<{ imageUrl?: string, isGenerating: boolean,
                             alt="Generated 3D Model" 
                             className="w-full h-full object-contain"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center p-4">
-                            <a href={imageUrl} target="_blank" rel="noopener noreferrer" className="text-white text-sm font-semibold hover:text-[#00FFC2] flex items-center">
-                                <LinkIcon className="w-4 h-4 mr-2" /> View Full Size
-                            </a>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center p-4 gap-3">
+                            <button 
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); onExpand?.(); }}
+                                className="bg-gray-700/80 hover:bg-gray-600 text-white px-3 py-2 rounded-lg text-xs font-semibold flex items-center backdrop-blur-sm transition-colors"
+                            >
+                                <LinkIcon className="w-3.5 h-3.5 mr-1.5" /> Full Screen
+                            </button>
+                             <button 
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); onDownload?.(); }}
+                                className="bg-[#00FFC2] hover:bg-teal-300 text-black px-3 py-2 rounded-lg text-xs font-bold flex items-center shadow-lg shadow-teal-500/20 transition-colors"
+                            >
+                                <UploadIcon className="w-3.5 h-3.5 mr-1.5 rotate-180" /> Download
+                            </button>
                         </div>
                     </div>
                     <div className="mt-4 text-left">
@@ -509,6 +520,20 @@ const BlueprintPreviewCard: React.FC<{ imageUrl?: string, isGenerating: boolean,
     );
 }
 
+const FullScreenImageOverlay: React.FC<{ imageUrl: string; onClose: () => void }> = ({ imageUrl, onClose }) => (
+    <div className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4 backdrop-blur-sm" onClick={onClose}>
+        <div className="relative max-w-full max-h-full">
+            <img src={imageUrl} alt="Full Screen" className="max-w-full max-h-[90vh] object-contain shadow-2xl" />
+            <button 
+                onClick={onClose}
+                className="absolute -top-12 right-0 text-white/70 hover:text-white p-2 transition-colors"
+            >
+                <XIcon className="w-8 h-8" />
+            </button>
+        </div>
+    </div>
+);
+
 interface PropertyEditorModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -527,6 +552,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
   const [isGenerating3D, setIsGenerating3D] = React.useState(false);
   const [generationProgress, setGenerationProgress] = React.useState(0);
   const [activePreview, setActivePreview] = React.useState<'property' | 'blueprint'>('property');
+  const [fullScreenImage, setFullScreenImage] = React.useState<string | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
   const formRef = React.useRef<HTMLFormElement | null>(null);
 
@@ -560,6 +586,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
     setIsGenerating3D(false);
     setGenerationProgress(0);
     setActivePreview('property');
+    setFullScreenImage(null);
   }, [property, isOpen]);
 
   React.useEffect(() => {
@@ -649,16 +676,29 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
               reader.readAsDataURL(file);
             });
 
+            const payload = {
+                image: base64Data,
+                details: {
+                    title: formData.title,
+                    type: formData.propertyType,
+                    plan: formData.plan,
+                    bedrooms: formData.bedrooms,
+                    bathrooms: formData.bathrooms,
+                    area: formData.area,
+                    location: formData.location
+                }
+            };
+
             console.log("Sending payload to n8n webhook:", { 
                 imageLength: base64Data.length,
-                preview: base64Data.substring(0, 30) + "..."
+                details: payload.details
             });
 
             // Call the n8n webhook directly
             const response = await fetch('https://n8n.sahaai.online/webhook/blueprint', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ image: base64Data })
+                body: JSON.stringify(payload)
             });
 
             if (!response.ok) {
@@ -923,7 +963,7 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
             </form>
             
             {/* Right Side Preview Panel */}
-            <div className="bg-[#0D1117] p-6 hidden md:flex flex-col items-center justify-start overflow-hidden">
+            <div className="bg-[#0D1117] p-6 hidden md:flex flex-col items-center justify-start overflow-hidden relative">
                 {/* Preview Switcher Tabs */}
                 <div className="bg-gray-800 p-1 rounded-lg flex mb-6 w-full max-w-sm">
                     <button 
@@ -947,10 +987,26 @@ const PropertyEditorModal: React.FC<PropertyEditorModalProps> = ({ isOpen, onClo
                         </div>
                     ) : (
                         <div className="transform scale-95 w-full h-full">
-                            <BlueprintPreviewCard imageUrl={formData.blueprint3DUrl} isGenerating={isGenerating3D} progress={generationProgress} />
+                            <BlueprintPreviewCard 
+                                imageUrl={formData.blueprint3DUrl} 
+                                isGenerating={isGenerating3D} 
+                                progress={generationProgress}
+                                onExpand={() => setFullScreenImage(formData.blueprint3DUrl || null)}
+                                onDownload={() => {
+                                    if(formData.blueprint3DUrl) {
+                                        const link = document.createElement('a');
+                                        link.href = formData.blueprint3DUrl;
+                                        link.download = `3d-blueprint-${Date.now()}.png`;
+                                        document.body.appendChild(link);
+                                        link.click();
+                                        document.body.removeChild(link);
+                                    }
+                                }}
+                            />
                         </div>
                     )}
                 </div>
+                {fullScreenImage && <FullScreenImageOverlay imageUrl={fullScreenImage} onClose={() => setFullScreenImage(null)} />}
             </div>
         </div>
 
