@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { db, storage } from '../firebaseConfig';
 import firebase from '../firebaseConfig';
-import { Property, PropertyType, PropertyStatus, PropertyPlan } from '../types';
+import { Property } from '../types';
 import { 
     PlusIcon, EditIcon, TrashIcon, XIcon, SpinnerIcon, 
     UploadIcon, BuildingOfficeIcon, LocationIcon, 
@@ -131,7 +131,7 @@ const BlueprintPreviewCard: React.FC<{
                     </div>
 
                     <p className="text-xs text-gray-500 mt-4 max-w-[240px] leading-relaxed">
-                        Our AI is converting your blueprint into a photorealistic 3D isometric render. This may take around 50 seconds.
+                        Our AI is converting your blueprint into a photorealistic 3D isometric render. This takes about 50 seconds.
                     </p>
                 </div>
             ) : imageUrl ? (
@@ -186,16 +186,32 @@ const BlueprintPreviewCard: React.FC<{
     );
 }
 
+// --- Loading Card Component ---
+const SavingPropertyCard: React.FC = () => (
+    <div className="bg-gray-800 rounded-xl shadow-lg border border-gray-700 w-full h-full min-h-[400px] flex flex-col overflow-hidden animate-pulse">
+        <div className="h-48 bg-gray-700"></div>
+        <div className="p-4 flex-1 flex flex-col space-y-4">
+            <div className="h-4 bg-gray-700 rounded w-3/4"></div>
+            <div className="h-3 bg-gray-700 rounded w-1/2"></div>
+            <div className="flex-1 bg-gray-700/50 rounded-lg"></div>
+            <div className="flex items-center justify-center text-[#00FFC2] text-sm font-semibold">
+                <SpinnerIcon className="w-4 h-4 mr-2 animate-spin" />
+                Saving Property...
+            </div>
+        </div>
+    </div>
+);
+
 // --- Main Editor Component ---
 
 interface PropertyEditorProps {
     user: any;
     property?: Property | null;
     onClose: () => void;
-    onSaveSuccess: (msg: string) => void;
+    onSave: (data: Partial<Property>, imageFile: File | null, blueprintBlob: Blob | null) => void;
 }
 
-const PropertyEditor: React.FC<PropertyEditorProps> = ({ user, property, onClose, onSaveSuccess }) => {
+const PropertyEditor: React.FC<PropertyEditorProps> = ({ user, property, onClose, onSave }) => {
     const formRef = React.useRef<HTMLFormElement>(null);
     const [formData, setFormData] = React.useState<Partial<Property>>({
         title: '',
@@ -219,18 +235,15 @@ const PropertyEditor: React.FC<PropertyEditorProps> = ({ user, property, onClose
     const [activePreview, setActivePreview] = React.useState<'property' | 'blueprint'>('property');
     const [fullViewUrl, setFullViewUrl] = React.useState<string | null>(null);
     
-    // Generation & Saving State
+    // Generation State
     const [isGenerating3D, setIsGenerating3D] = React.useState(false);
     const [generationProgress, setGenerationProgress] = React.useState(0);
-    const [saving, setSaving] = React.useState(false);
+    const [blueprintBlob, setBlueprintBlob] = React.useState<Blob | null>(null);
 
     React.useEffect(() => {
         if (property) {
             setFormData(property);
             setImagePreviewUrl(property.imageUrl || null);
-            if (property.blueprint3DUrl) {
-                // If it has a blueprint, maybe we could switch to it, but stick to property preview by default
-            }
         }
     }, [property]);
 
@@ -273,24 +286,21 @@ const PropertyEditor: React.FC<PropertyEditorProps> = ({ user, property, onClose
             setActivePreview('blueprint');
             setGenerationProgress(0);
 
-            // Simulation: 0 -> 100% over ~50 seconds
-            // 50 seconds = 50,000ms. 
-            // Update every 500ms -> 100 steps.
-            // Increment 1% per step.
+            // Simulation: 0 -> 100% over 50 seconds (approx)
+            // 50s = 50000ms. Update every 500ms => 100 steps.
             const progressInterval = setInterval(() => {
                 setGenerationProgress(prev => {
-                    if (prev >= 98) return 98;
+                    if (prev >= 95) return 95; // hold at 95 until done
                     return prev + 1;
                 });
             }, 500);
 
             try {
-                // 1. Convert to Base64 for payload
+                // 1. Convert input file to Base64 for webhook payload
                 const base64Data = await new Promise<string>((resolve, reject) => {
                     const reader = new FileReader();
                     reader.onload = () => {
                         const result = reader.result as string;
-                        // Remove data:image/...;base64, prefix if present
                         const base64 = result.includes(',') ? result.split(',')[1] : result;
                         resolve(base64);
                     };
@@ -316,22 +326,15 @@ const PropertyEditor: React.FC<PropertyEditorProps> = ({ user, property, onClose
 
                 // 3. Handle Binary Response (Blob)
                 const blob = await response.blob();
+                setBlueprintBlob(blob); // Store blob for saving later
                 
-                // Convert blob to Data URL for display and saving logic
-                const responseBase64 = await new Promise<string>((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onloadend = () => resolve(reader.result as string);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(blob);
-                });
-
+                // Create URL for preview
+                const previewUrl = URL.createObjectURL(blob);
+                
                 clearInterval(progressInterval);
                 setGenerationProgress(100);
                 
-                // Slight delay to show 100%
-                await new Promise(r => setTimeout(r, 500));
-                
-                setFormData(prev => ({ ...prev, blueprint3DUrl: responseBase64 }));
+                setFormData(prev => ({ ...prev, blueprint3DUrl: previewUrl }));
 
             } catch (error) {
                 console.error("3D Generation Error:", error);
@@ -354,94 +357,18 @@ const PropertyEditor: React.FC<PropertyEditorProps> = ({ user, property, onClose
         document.body.removeChild(link);
     };
 
-    const handleSaveClick = async () => {
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
         if (!formRef.current?.reportValidity()) return;
-
-        setSaving(true);
-        try {
-            console.log("Saving property...");
-
-            // 1. Upload Main Property Image (if changed)
-            let finalImageUrl = property?.imageUrl || '';
-            if (imageFile) {
-                // Delete old if needed
-                if (property?.imageUrl && property.imageUrl.startsWith('http')) {
-                    try { await storage.refFromURL(property.imageUrl).delete(); } catch (e) { console.warn("Delete old img failed", e); }
-                }
-                const storageRef = storage.ref(`posts/${user.uid}/${Date.now()}_${imageFile.name}`);
-                await storageRef.put(imageFile);
-                finalImageUrl = await storageRef.getDownloadURL();
-            } else if (!imagePreviewUrl) {
-                finalImageUrl = ''; // User removed image
-            }
-
-            // 2. Upload 3D Blueprint Image (if newly generated)
-            let finalBlueprintUrl = formData.blueprint3DUrl || '';
-            if (finalBlueprintUrl.startsWith('data:')) {
-                // It's a base64 string, need to upload
-                console.log("Uploading 3D blueprint to storage...");
-                
-                if (property?.blueprint3DUrl && property.blueprint3DUrl.startsWith('http')) {
-                    try { await storage.refFromURL(property.blueprint3DUrl).delete(); } catch (e) { console.warn("Delete old blueprint failed", e); }
-                }
-
-                const res = await fetch(finalBlueprintUrl);
-                const blob = await res.blob();
-                const filename = `${Date.now()}_blueprint_3d.png`;
-                const storageRef = storage.ref(`posts/${user.uid}/${filename}`);
-                await storageRef.put(blob);
-                finalBlueprintUrl = await storageRef.getDownloadURL();
-            }
-
-            // 3. Save to Firestore (Strict Object Construction)
-            // We explicitly construct the object to prevent accidental base64 strings from slipping in
-            const dataToSave = {
-                userId: user.uid,
-                title: formData.title || '',
-                location: formData.location || '',
-                price: Number(formData.price) || 0,
-                currency: formData.currency || 'AED',
-                bedrooms: Number(formData.bedrooms) || 0,
-                bathrooms: Number(formData.bathrooms) || 0,
-                area: Number(formData.area) || 0,
-                propertyType: formData.propertyType || 'Apartment',
-                status: formData.status || 'For Sale',
-                plan: formData.plan || '1 BHK',
-                propertyLink: formData.propertyLink || '',
-                imageUrl: finalImageUrl,
-                blueprint3DUrl: finalBlueprintUrl, // MUST be URL, not base64
-                createdAt: property?.createdAt || (firebase as any).firestore.FieldValue.serverTimestamp(),
-            };
-
-            // Safety check
-            if (dataToSave.blueprint3DUrl && dataToSave.blueprint3DUrl.length > 5000) {
-                throw new Error("Blueprint URL is too long. Upload may have failed.");
-            }
-
-            if (property) {
-                await db.collection('users').doc(user.uid).collection('Property_details').doc(property.id).update(dataToSave);
-                await sendPropertyWebhook({ id: property.id, ...dataToSave } as Property, 'update');
-                onSaveSuccess('Property updated successfully!');
-            } else {
-                const docRef = await db.collection('users').doc(user.uid).collection('Property_details').add(dataToSave);
-                await sendPropertyWebhook({ id: docRef.id, ...dataToSave } as Property, 'create');
-                onSaveSuccess('Property added successfully!');
-            }
-            onClose();
-
-        } catch (error: any) {
-            console.error("Save error:", error);
-            alert(`Failed to save: ${error.message}`);
-        } finally {
-            setSaving(false);
-        }
+        
+        // Pass data to parent for background saving
+        onSave(formData, imageFile, blueprintBlob);
     };
 
     // Live preview data merging
     const livePreviewData = { 
         ...formData, 
         imageUrl: imagePreviewUrl || formData.imageUrl,
-        // For preview, we use the local base64/url. For saving, we handle uploads.
     };
 
     return (
@@ -520,7 +447,10 @@ const PropertyEditor: React.FC<PropertyEditorProps> = ({ user, property, onClose
                                                     <p className="text-xs text-gray-400">Ready to view in preview panel</p>
                                                 </div>
                                             </div>
-                                            <button type="button" onClick={() => setFormData(p => ({...p, blueprint3DUrl: ''}))} className="text-gray-400 hover:text-red-400">
+                                            <button type="button" onClick={() => {
+                                                setFormData(p => ({...p, blueprint3DUrl: ''}));
+                                                setBlueprintBlob(null);
+                                            }} className="text-gray-400 hover:text-red-400">
                                                 <TrashIcon className="w-4 h-4" />
                                             </button>
                                         </div>
@@ -610,12 +540,11 @@ const PropertyEditor: React.FC<PropertyEditorProps> = ({ user, property, onClose
                         Cancel
                     </button>
                     <button 
-                        onClick={handleSaveClick} 
-                        disabled={saving || isGenerating3D}
+                        onClick={handleSubmit} 
+                        disabled={isGenerating3D}
                         className="px-6 py-2.5 rounded-lg bg-[#00FFC2] text-black font-bold hover:bg-teal-300 transition-colors flex items-center shadow-lg shadow-teal-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        {saving && <SpinnerIcon className="w-4 h-4 mr-2 animate-spin" />}
-                        {saving ? 'Saving...' : 'Save Property'}
+                        Save Property
                     </button>
                 </div>
             </div>
@@ -647,6 +576,7 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
     const [editorOpen, setEditorOpen] = React.useState(false);
     const [editingProperty, setEditingProperty] = React.useState<Property | null>(null);
     const [message, setMessage] = React.useState<{ type: 'success' | 'error', text: string } | null>(null);
+    const [isBackgroundSaving, setIsBackgroundSaving] = React.useState(false);
 
     React.useEffect(() => {
         setLoading(true);
@@ -687,11 +617,76 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
             alert("Failed to delete");
         }
     };
+    
+    // Background Saving Logic
+    const handleBackgroundSave = async (formData: Partial<Property>, imageFile: File | null, blueprintBlob: Blob | null) => {
+        // 1. Close Editor Immediately
+        setEditorOpen(false);
+        setIsBackgroundSaving(true);
+        setMessage(null);
 
-    const handleSaveSuccess = (msg: string) => {
-        setMessage({ type: 'success', text: msg });
-        setTimeout(() => setMessage(null), 3000);
+        try {
+            console.log("Saving property in background...");
+
+            // 2. Upload Main Property Image (if changed)
+            let finalImageUrl = formData.imageUrl || '';
+            if (imageFile) {
+                 // Delete old if needed (optional logic skipped for simplicity, but good practice)
+                const storageRef = storage.ref(`posts/${user.uid}/${Date.now()}_${imageFile.name}`);
+                await storageRef.put(imageFile);
+                finalImageUrl = await storageRef.getDownloadURL();
+            } else if (!formData.imageUrl) {
+                finalImageUrl = ''; // User removed image
+            }
+
+            // 3. Upload 3D Blueprint Image (if newly generated)
+            let finalBlueprintUrl = formData.blueprint3DUrl || '';
+            if (blueprintBlob) {
+                console.log("Uploading 3D blueprint...");
+                const filename = `${Date.now()}_blueprint_3d.png`;
+                const storageRef = storage.ref(`posts/${user.uid}/${filename}`);
+                await storageRef.put(blueprintBlob);
+                finalBlueprintUrl = await storageRef.getDownloadURL();
+            }
+
+            // 4. Save to Firestore
+            const dataToSave = {
+                userId: user.uid,
+                title: formData.title || '',
+                location: formData.location || '',
+                price: Number(formData.price) || 0,
+                currency: formData.currency || 'AED',
+                bedrooms: Number(formData.bedrooms) || 0,
+                bathrooms: Number(formData.bathrooms) || 0,
+                area: Number(formData.area) || 0,
+                propertyType: formData.propertyType || 'Apartment',
+                status: formData.status || 'For Sale',
+                plan: formData.plan || '1 BHK',
+                propertyLink: formData.propertyLink || '',
+                imageUrl: finalImageUrl,
+                blueprint3DUrl: finalBlueprintUrl,
+                createdAt: editingProperty?.createdAt || (firebase as any).firestore.FieldValue.serverTimestamp(),
+            };
+            
+             if (editingProperty) {
+                await db.collection('users').doc(user.uid).collection('Property_details').doc(editingProperty.id).update(dataToSave);
+                await sendPropertyWebhook({ id: editingProperty.id, ...dataToSave } as Property, 'update');
+                setMessage({ type: 'success', text: 'Property updated successfully!' });
+            } else {
+                const docRef = await db.collection('users').doc(user.uid).collection('Property_details').add(dataToSave);
+                await sendPropertyWebhook({ id: docRef.id, ...dataToSave } as Property, 'create');
+                setMessage({ type: 'success', text: 'Property added successfully!' });
+            }
+
+        } catch (error: any) {
+            console.error("Background Save Error:", error);
+            setMessage({ type: 'error', text: `Failed to save: ${error.message}` });
+        } finally {
+            setIsBackgroundSaving(false);
+            setTimeout(() => setMessage(null), 5000);
+        }
     };
+
 
     return (
         <div className="container mx-auto p-4 md:p-8 h-full flex flex-col">
@@ -716,7 +711,7 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
                 <div className="flex-1 flex justify-center items-center">
                     <SpinnerIcon className="w-12 h-12 text-[#00FFC2] animate-spin" />
                 </div>
-            ) : properties.length === 0 ? (
+            ) : properties.length === 0 && !isBackgroundSaving ? (
                 <div className="flex-1 flex flex-col justify-center items-center text-gray-500 border-2 border-dashed border-gray-800 rounded-xl p-12 bg-gray-900/30">
                     <BuildingOfficeIcon className="w-16 h-16 mb-4 opacity-30" />
                     <p className="text-lg font-medium text-gray-400">No properties found</p>
@@ -725,6 +720,9 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20">
+                    {/* Show Loading Card if saving */}
+                    {isBackgroundSaving && <SavingPropertyCard />}
+                    
                     {properties.map(property => (
                         <div key={property.id} className="relative group">
                             <PropertyPreviewCard property={property} />
@@ -756,7 +754,7 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
                     user={user} 
                     property={editingProperty} 
                     onClose={() => setEditorOpen(false)} 
-                    onSaveSuccess={handleSaveSuccess}
+                    onSave={handleBackgroundSave}
                 />
             )}
         </div>

@@ -1,5 +1,6 @@
 
 
+
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, UploadIcon, XIcon, TwitterIcon, LinkedInIcon, FileIcon, InstagramIcon, FacebookIcon, TikTokIcon, ThreadsIcon, YouTubeIcon, PlayIcon, EditIcon, TrashIcon, SparklesIcon, CheckCircleIcon, AlertTriangleIcon, PlusIcon, InfoIcon, PinterestIcon } from './icons';
@@ -979,7 +980,7 @@ const Schedule: React.FC = () => {
                                                                     {statusIcons[post.status] || statusIcons.draft}
                                                                     <span className="font-semibold truncate">{post.caption || (post.status === 'draft' ? 'Draft' : 'No Caption')}</span>
                                                                 </div>
-                                                                <div className="absolute top-1 right-1 flex space-x-1 opacity-0 group-hover/post:opacity-100 transition-opacity bg-gray-900/90 backdrop-blur-md border border-white/10 rounded-full p-1 z-20 shadow-md">
+                                                                <div className="absolute top-1 right-1 flex space-x-1 bg-gray-900/90 backdrop-blur-md border border-white/10 rounded-full p-1 z-20 shadow-md">
                                                                     <button onClick={(e) => { e.stopPropagation(); handleEditPostClick(post); }} className="p-1 hover:bg-gray-700 rounded-full text-gray-300 hover:text-white transition-colors" title="Edit"><EditIcon className="w-3 h-3"/></button>
                                                                     <button onClick={(e) => { e.stopPropagation(); handleDeletePost(post); }} className="p-1 hover:bg-red-900/50 rounded-full text-gray-300 hover:text-red-400 transition-colors" title="Delete"><TrashIcon className="w-3 h-3"/></button>
                                                                 </div>
