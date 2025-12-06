@@ -38,7 +38,10 @@ const DetailItem: React.FC<{ icon: React.ReactElement; label: string; value?: Re
     </li>
 );
 
-const PropertyPreviewCard: React.FC<{ property: Partial<Property> }> = ({ property }) => {
+const PropertyPreviewCard: React.FC<{ 
+    property: Partial<Property>; 
+    onStatusChange?: (newStatus: string) => void;
+}> = ({ property, onStatusChange }) => {
     const formattedPrice = new Intl.NumberFormat(property.currency === 'USD' ? 'en-US' : 'en-AE', {
       style: 'currency',
       currency: property.currency || 'AED',
@@ -56,6 +59,12 @@ const PropertyPreviewCard: React.FC<{ property: Partial<Property> }> = ({ proper
         propertyLink,
         status = 'For Sale',
       } = property;
+
+    const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        if (onStatusChange) {
+            onStatusChange(e.target.value);
+        }
+    };
 
     return (
       <div className="bg-gray-800 rounded-xl shadow-lg border border-gray-700 w-full max-w-sm mx-auto font-sans h-full flex flex-col overflow-hidden">
@@ -86,7 +95,24 @@ const PropertyPreviewCard: React.FC<{ property: Partial<Property> }> = ({ proper
             </div>
             <div className="mt-4 p-4 bg-gray-700/50 border border-gray-600/80 rounded-lg flex-1">
                 <ul className="space-y-3 text-sm">
-                    <DetailItem icon={<TagIcon />} label={status} />
+                    <li className="flex items-center text-gray-100">
+                        <TagIcon className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
+                        {onStatusChange ? (
+                             <select 
+                                value={status} 
+                                onChange={handleSelectChange}
+                                className="bg-transparent border-none text-gray-100 font-medium focus:ring-0 cursor-pointer p-0 text-sm w-full outline-none"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <option value="For Sale" className="bg-gray-800 text-white">For Sale</option>
+                                <option value="For Rent" className="bg-gray-800 text-white">For Rent</option>
+                                <option value="Sold" className="bg-gray-800 text-white">Sold</option>
+                                <option value="Rented" className="bg-gray-800 text-white">Rented</option>
+                            </select>
+                        ) : (
+                            <span className="font-medium">{status}</span>
+                        )}
+                    </li>
                     <DetailItem icon={<LocationIcon />} label={location || "Location"} />
                     <li className="flex items-center text-gray-100 font-medium flex-wrap">
                         <CurrencyDollarIcon className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
@@ -528,7 +554,10 @@ const PropertyEditor: React.FC<PropertyEditorProps> = ({ user, property, onClose
                         <div className="flex-1 w-full flex items-center justify-center">
                             {activePreview === 'property' ? (
                                 <div className="transform scale-100 w-full h-full max-h-[500px]">
-                                    <PropertyPreviewCard property={livePreviewData} />
+                                    <PropertyPreviewCard 
+                                        property={livePreviewData} 
+                                        onStatusChange={(newStatus) => setFormData(prev => ({ ...prev, status: newStatus as any }))}
+                                    />
                                 </div>
                             ) : (
                                 <div className="transform scale-100 w-full h-full max-h-[500px]">
@@ -698,6 +727,19 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
         }
     };
 
+    const handleInlineStatusUpdate = async (property: Property, newStatus: string) => {
+        try {
+            await db.collection('users').doc(user.uid).collection('Property_details').doc(property.id).update({
+                status: newStatus
+            });
+            // Trigger webhook for sync
+             await sendPropertyWebhook({ ...property, status: newStatus as any }, 'update');
+             
+        } catch (error) {
+            console.error("Failed to update status", error);
+            alert("Failed to update status");
+        }
+    };
 
     return (
         <div className="container mx-auto p-4 md:p-8 h-full flex flex-col">
@@ -736,7 +778,10 @@ const Knowledge: React.FC<KnowledgeProps> = ({ user }) => {
                     
                     {properties.map(property => (
                         <div key={property.id} className="relative group">
-                            <PropertyPreviewCard property={property} />
+                            <PropertyPreviewCard 
+                                property={property} 
+                                onStatusChange={(newStatus) => handleInlineStatusUpdate(property, newStatus)}
+                            />
                             
                             {/* Actions Overlay */}
                             <div className="absolute top-3 right-3 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
