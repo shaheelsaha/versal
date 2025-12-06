@@ -806,14 +806,25 @@ const Schedule: React.FC = () => {
         });
     }, [startOfWeek]);
 
-    const timeSlots = React.useMemo(() => Array.from({ length: 24 }).map((_, i) => `${i.toString().padStart(2, '0')}:00`), []);
+    const timeSlots = React.useMemo(() => {
+        const slots = [];
+        for (let i = 0; i < 24; i++) {
+            slots.push(`${i.toString().padStart(2, '0')}:00`);
+            slots.push(`${i.toString().padStart(2, '0')}:30`);
+        }
+        return slots;
+    }, []);
 
-    const postsByDayAndHour = React.useMemo(() => {
+    const postsByDayAndSlot = React.useMemo(() => {
         const grid: { [key: string]: Post[] } = {};
         posts.forEach(post => {
             if (post.scheduledAt) {
                 const date = new Date(post.scheduledAt);
-                const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}-${date.getHours()}`;
+                const hour = date.getHours();
+                const minute = date.getMinutes();
+                const isHalf = minute >= 30;
+                // Key format: YYYY-MM-DD-HH-mm (mm is 00 or 30)
+                const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}-${hour}-${isHalf ? '30' : '00'}`;
                 if (!grid[key]) grid[key] = [];
                 grid[key].push(post);
             }
@@ -866,16 +877,17 @@ const Schedule: React.FC = () => {
                         ))}
                     </div>
                     <div className="p-2 space-y-2">
-                        {timeSlots.map((time, hour) => {
+                        {timeSlots.map((time) => {
+                             const [hourStr, minuteStr] = time.split(':');
                              const slotDate = new Date(selectedDay);
-                             slotDate.setHours(hour, 0, 0, 0);
-                             const key = `${slotDate.getFullYear()}-${slotDate.getMonth()}-${slotDate.getDate()}-${slotDate.getHours()}`;
-                             const dayPosts = postsByDayAndHour[key] || [];
+                             slotDate.setHours(parseInt(hourStr), parseInt(minuteStr), 0, 0);
+                             const key = `${slotDate.getFullYear()}-${slotDate.getMonth()}-${slotDate.getDate()}-${slotDate.getHours()}-${slotDate.getMinutes() < 30 ? '00' : '30'}`;
+                             const dayPosts = postsByDayAndSlot[key] || [];
 
                              if (dayPosts.length === 0) return null;
 
                              return (
-                                 <div key={hour} className="flex items-start py-2 border-b border-white/10 last:border-b-0">
+                                 <div key={time} className="flex items-start py-2 border-b border-white/10 last:border-b-0">
                                      <span className="text-xs text-gray-500 w-16 pt-1.5">{time}</span>
                                      <div className="flex-1 space-y-2">
                                          {dayPosts.map(post => (
@@ -924,7 +936,7 @@ const Schedule: React.FC = () => {
                     {/* Grid */}
                     <div className="col-start-1 row-start-2 border-r border-white/10 text-right">
                         {timeSlots.map(time => (
-                            <div key={time} className="h-24 flex justify-end pr-2 pt-1 border-t border-gray-800 first:border-t-0">
+                            <div key={time} className="h-28 flex justify-end pr-2 pt-1 border-t border-gray-800 first:border-t-0">
                                 <span className="text-xs text-gray-500">{time}</span>
                             </div>
                         ))}
@@ -932,14 +944,15 @@ const Schedule: React.FC = () => {
                     <div className="col-start-2 row-start-2 grid grid-cols-7">
                         {weekDays.map(day => (
                             <div key={day.toISOString()} className="border-l border-white/10">
-                                {timeSlots.map((_, hour) => {
+                                {timeSlots.map((time) => {
+                                    const [hourStr, minuteStr] = time.split(':');
                                     const slotDate = new Date(day);
-                                    slotDate.setHours(hour, 0, 0, 0);
-                                    const key = `${slotDate.getFullYear()}-${slotDate.getMonth()}-${slotDate.getDate()}-${slotDate.getHours()}`;
-                                    const dayPosts = postsByDayAndHour[key] || [];
+                                    slotDate.setHours(parseInt(hourStr), parseInt(minuteStr), 0, 0);
+                                    const key = `${slotDate.getFullYear()}-${slotDate.getMonth()}-${slotDate.getDate()}-${slotDate.getHours()}-${slotDate.getMinutes() < 30 ? '00' : '30'}`;
+                                    const dayPosts = postsByDayAndSlot[key] || [];
 
                                     return (
-                                        <div key={hour} className="h-24 border-t border-gray-800 p-1 group relative">
+                                        <div key={time} className="h-28 border-t border-gray-800 p-1 group relative overflow-y-auto">
                                             {dayPosts.length > 0 ? (
                                                 <div className="space-y-1">
                                                 {dayPosts.map(post => {
@@ -967,7 +980,7 @@ const Schedule: React.FC = () => {
                                                                     {statusIcons[post.status] || statusIcons.draft}
                                                                     <span className="font-semibold truncate">{post.caption || (post.status === 'draft' ? 'Draft' : 'No Caption')}</span>
                                                                 </div>
-                                                                <div className="absolute top-1 right-1 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900/50 backdrop-blur-sm rounded-full p-0.5">
+                                                                <div className="absolute top-1 right-1 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900/50 backdrop-blur-sm rounded-full p-0.5 z-10">
                                                                     <button onClick={(e) => { e.stopPropagation(); handleEditPostClick(post); }} className="p-1 hover:bg-gray-700 rounded-full"><EditIcon className="w-3 h-3 text-gray-400"/></button>
                                                                     <button onClick={(e) => { e.stopPropagation(); handleDeletePost(post); }} className="p-1 hover:bg-gray-700 rounded-full"><TrashIcon className="w-3 h-3 text-gray-400"/></button>
                                                                 </div>
