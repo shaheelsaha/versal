@@ -1,5 +1,7 @@
 
 
+
+
     // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
     import * as React from 'react';
     import { MenuIcon, XIcon } from './icons';
