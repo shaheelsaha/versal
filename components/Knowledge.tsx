@@ -8,7 +8,7 @@ import {
     UploadIcon, BuildingOfficeIcon, LocationIcon, 
     CurrencyDollarIcon, BedIcon, BathIcon, AreaIcon, 
     LinkIcon, SparklesIcon, CheckCircleIcon,
-    DownloadIcon
+    DownloadIcon, TagIcon
 } from './icons';
 
 interface KnowledgeProps {
@@ -54,6 +54,7 @@ const PropertyPreviewCard: React.FC<{ property: Partial<Property> }> = ({ proper
         area = 0,
         imageUrl,
         propertyLink,
+        status = 'For Sale',
       } = property;
 
     return (
@@ -66,6 +67,15 @@ const PropertyPreviewCard: React.FC<{ property: Partial<Property> }> = ({ proper
                     <BuildingOfficeIcon className="w-12 h-12 opacity-50" />
                 </div>
             )}
+            <div className="absolute top-3 right-3">
+                 <span className={`px-2 py-1 rounded text-xs font-bold shadow-md ${
+                     status === 'Sold' || status === 'Rented' 
+                     ? 'bg-red-500/90 text-white' 
+                     : 'bg-[#00FFC2]/90 text-black'
+                 }`}>
+                     {status}
+                 </span>
+            </div>
         </div>
         <div className="p-4 flex-1 flex flex-col">
             <div>
@@ -76,6 +86,7 @@ const PropertyPreviewCard: React.FC<{ property: Partial<Property> }> = ({ proper
             </div>
             <div className="mt-4 p-4 bg-gray-700/50 border border-gray-600/80 rounded-lg flex-1">
                 <ul className="space-y-3 text-sm">
+                    <DetailItem icon={<TagIcon />} label={status} />
                     <DetailItem icon={<LocationIcon />} label={location || "Location"} />
                     <li className="flex items-center text-gray-100 font-medium flex-wrap">
                         <CurrencyDollarIcon className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
