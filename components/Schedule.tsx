@@ -974,18 +974,18 @@ const Schedule: React.FC = () => {
                                                     };
 
                                                     return (
-                                                        <div key={post.id} onClick={() => handleEditPostClick(post)} className={`rounded p-1.5 text-xs overflow-hidden border cursor-pointer transition-all ${statusStyles[post.status] || statusStyles.draft}`}>
+                                                        <div key={post.id} onClick={() => handleEditPostClick(post)} className={`relative group/post rounded p-1.5 text-xs overflow-hidden border cursor-pointer transition-all ${statusStyles[post.status] || statusStyles.draft}`}>
                                                             <div className="flex items-center justify-between">
                                                                 <div className="flex items-center overflow-hidden">
                                                                     {statusIcons[post.status] || statusIcons.draft}
                                                                     <span className="font-semibold truncate">{post.caption || (post.status === 'draft' ? 'Draft' : 'No Caption')}</span>
                                                                 </div>
-                                                                <div className="absolute top-1 right-1 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900/50 backdrop-blur-sm rounded-full p-0.5 z-10">
-                                                                    <button onClick={(e) => { e.stopPropagation(); handleEditPostClick(post); }} className="p-1 hover:bg-gray-700 rounded-full"><EditIcon className="w-3 h-3 text-gray-400"/></button>
-                                                                    <button onClick={(e) => { e.stopPropagation(); handleDeletePost(post); }} className="p-1 hover:bg-gray-700 rounded-full"><TrashIcon className="w-3 h-3 text-gray-400"/></button>
+                                                                <div className="absolute top-1 right-1 flex space-x-1 opacity-0 group-hover/post:opacity-100 transition-opacity bg-gray-900/90 backdrop-blur-md border border-white/10 rounded-full p-1 z-20 shadow-md">
+                                                                    <button onClick={(e) => { e.stopPropagation(); handleEditPostClick(post); }} className="p-1 hover:bg-gray-700 rounded-full text-gray-300 hover:text-white transition-colors" title="Edit"><EditIcon className="w-3 h-3"/></button>
+                                                                    <button onClick={(e) => { e.stopPropagation(); handleDeletePost(post); }} className="p-1 hover:bg-red-900/50 rounded-full text-gray-300 hover:text-red-400 transition-colors" title="Delete"><TrashIcon className="w-3 h-3"/></button>
                                                                 </div>
                                                             </div>
-                                                            <p className="truncate pl-5 text-gray-400">{post.caption}</p>
+                                                            <p className="truncate pl-5 text-gray-400 mt-1">{post.caption}</p>
                                                         </div>
                                                     );
                                                 })}
