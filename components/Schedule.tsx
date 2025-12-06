@@ -1,7 +1,8 @@
 
+
 import * as React from 'react';
 import { createPortal } from 'react-dom';
-import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, UploadIcon, XIcon, TwitterIcon, LinkedInIcon, DribbbleIcon, FileIcon, InstagramIcon, FacebookIcon, TikTokIcon, ThreadsIcon, YouTubeIcon, PlayIcon, EditIcon, TrashIcon, SparklesIcon, CheckCircleIcon, AlertTriangleIcon, PlusIcon, InfoIcon, PinterestIcon } from './icons';
+import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, UploadIcon, XIcon, TwitterIcon, LinkedInIcon, FileIcon, InstagramIcon, FacebookIcon, TikTokIcon, ThreadsIcon, YouTubeIcon, PlayIcon, EditIcon, TrashIcon, SparklesIcon, CheckCircleIcon, AlertTriangleIcon, PlusIcon, InfoIcon, PinterestIcon } from './icons';
 import { Post, SocialPlatform } from '../types';
 import { db, storage, auth } from '../firebaseConfig';
 import firebase from '../firebaseConfig'; // Import from local config to avoid runtime failure
@@ -28,7 +29,6 @@ const platformDetails: { [key in SocialPlatform]: { icon: React.FC<{className?: 
     [SocialPlatform.TWITTER]: { icon: TwitterIcon, color: 'bg-sky-500', brandColor: '#000000' },
     [SocialPlatform.TIKTOK]: { icon: TikTokIcon, color: 'bg-black', brandColor: '#000000' },
     [SocialPlatform.YOUTUBE]: { icon: YouTubeIcon, color: 'bg-red-600', brandColor: '#FF0000' },
-    [SocialPlatform.DRIBBBLE]: { icon: DribbbleIcon, color: 'bg-pink-500', brandColor: '#ea4c89' },
     [SocialPlatform.PINTEREST]: { icon: PinterestIcon, color: 'bg-red-700', brandColor: '#E60023' },
 };
 
@@ -36,7 +36,6 @@ const platformDetails: { [key in SocialPlatform]: { icon: React.FC<{className?: 
 const platformOrder: SocialPlatform[] = [
     SocialPlatform.TWITTER,
     SocialPlatform.LINKEDIN,
-    SocialPlatform.DRIBBBLE,
     SocialPlatform.INSTAGRAM,
     SocialPlatform.FACEBOOK,
     SocialPlatform.THREADS,
