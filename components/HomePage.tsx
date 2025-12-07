@@ -1,6 +1,3 @@
-
-
-
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
 import { Link } from 'react-router-dom';
@@ -98,7 +95,7 @@ const HomePage: React.FC<HomePageProps> = () => {
         { Icon: YouTubeIcon, name: 'YouTube', color: '#FF0000' },
         { Icon: ThreadsIcon, name: 'Threads', color: '#000000' },
         { Icon: PinterestIcon, name: 'Pinterest', color: '#BD081C' },
-        { Icon: SnapchatIcon, name: 'Snapchat', color: '#FFFC00' },
+        { Icon: SnapchatIcon, name: 'Snapchat', color: '#000000' },
         { Icon: SlackIcon, name: 'Slack', color: '#4A154B' },
         { Icon: MicrosoftTeamsIcon, name: 'Teams', color: '#6264A7' },
         { Icon: GoogleDriveIcon, name: 'Drive', color: '#1FA463' },
