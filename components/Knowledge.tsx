@@ -1,6 +1,7 @@
 
 
 
+
 import * as React from 'react';
 import { db, storage } from '../firebaseConfig';
 import firebase from '../firebaseConfig';
@@ -69,8 +70,8 @@ const PropertyPreviewCard: React.FC<{
     };
 
     return (
-      <div className="bg-gray-800 rounded-xl shadow-lg border border-gray-700 w-full max-w-sm mx-auto font-sans h-full flex flex-col overflow-hidden">
-        <div className="h-48 bg-gray-700 relative">
+      <div className="bg-gray-800 rounded-xl shadow-lg border border-gray-700 w-full max-w-sm mx-auto font-sans flex flex-col overflow-hidden">
+        <div className="h-48 bg-gray-700 relative flex-shrink-0">
             {imageUrl ? (
                 <img src={imageUrl} alt={title} className="w-full h-full object-cover" />
             ) : (
@@ -534,10 +535,10 @@ const PropertyEditor: React.FC<PropertyEditorProps> = ({ user, property, onClose
                     </form>
 
                     {/* Right: Preview Panel */}
-                    <div className="bg-[#0D1117] p-6 hidden md:flex flex-col items-center justify-start overflow-hidden relative border-l border-white/5">
+                    <div className="bg-[#0D1117] p-6 hidden md:flex flex-col items-center justify-start overflow-y-auto relative border-l border-white/5 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
                         
                         {/* Tabs */}
-                        <div className="bg-gray-800 p-1 rounded-lg flex mb-8 w-full max-w-sm">
+                        <div className="bg-gray-800 p-1 rounded-lg flex mb-8 w-full max-w-sm flex-shrink-0">
                             <button 
                                 onClick={() => setActivePreview('property')}
                                 className={`flex-1 py-2 px-3 rounded-md text-xs font-bold transition-all ${activePreview === 'property' ? 'bg-[#00FFC2] text-black shadow-sm' : 'text-gray-400 hover:text-white'}`}
@@ -553,16 +554,16 @@ const PropertyEditor: React.FC<PropertyEditorProps> = ({ user, property, onClose
                         </div>
 
                         {/* Card Content */}
-                        <div className="flex-1 w-full flex items-center justify-center">
+                        <div className="w-full flex items-center justify-center flex-1 min-h-0">
                             {activePreview === 'property' ? (
-                                <div className="transform scale-100 w-full h-full max-h-[500px]">
+                                <div className="w-full max-w-sm my-auto">
                                     <PropertyPreviewCard 
                                         property={livePreviewData} 
                                         onStatusChange={(newStatus) => setFormData(prev => ({ ...prev, status: newStatus as any }))}
                                     />
                                 </div>
                             ) : (
-                                <div className="transform scale-100 w-full h-full max-h-[500px]">
+                                <div className="w-full max-w-sm h-full max-h-[500px] min-h-[400px] my-auto">
                                     <BlueprintPreviewCard 
                                         imageUrl={formData.blueprint3DUrl} 
                                         isGenerating={isGenerating3D} 
