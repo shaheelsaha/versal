@@ -2,6 +2,7 @@
 
 
 
+
 import * as React from 'react';
 import { db, storage } from '../firebaseConfig';
 import firebase from '../firebaseConfig';
@@ -94,7 +95,6 @@ const PropertyPreviewCard: React.FC<{
                 <h3 className="text-base font-semibold text-gray-100 leading-tight">
                     {title || 'Property Title'}
                 </h3>
-                <p className="text-xs text-gray-400 mt-1">propertyfinder.ae</p>
             </div>
             <div className="mt-4 p-4 bg-gray-700/50 border border-gray-600/80 rounded-lg flex-1">
                 <ul className="space-y-3 text-sm">
