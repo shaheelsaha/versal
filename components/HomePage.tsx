@@ -1,4 +1,6 @@
 
+
+
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
 import { Link } from 'react-router-dom';
@@ -19,17 +21,24 @@ import {
     ConversationIcon,
     CheckCircleIcon,
     MicrophoneIcon,
+    TwitterIcon,
+    ThreadsIcon,
+    SnapchatIcon,
+    SlackIcon,
+    MicrosoftTeamsIcon,
+    GoogleDriveIcon
 } from './icons';
 
 interface HomePageProps {}
 
-const FeatureCard: React.FC<{ icon: React.ReactElement; title: string; description: string }> = ({ icon, title, description }) => (
-    <div className="bg-gray-900/50 backdrop-blur-xl border border-white/10 rounded-2xl p-6 transition-all duration-300 hover:border-white/20 hover:-translate-y-1 h-full">
+const FeatureCard: React.FC<{ icon: React.ReactElement; title: string; description: string; children?: React.ReactNode }> = ({ icon, title, description, children }) => (
+    <div className="bg-gray-900/50 backdrop-blur-xl border border-white/10 rounded-2xl p-6 transition-all duration-300 hover:border-white/20 hover:-translate-y-1 h-full flex flex-col">
         <div className="bg-[#00FFC2]/10 text-[#00FFC2] rounded-lg w-12 h-12 flex items-center justify-center mb-4">
             {React.cloneElement<{ className?: string }>(icon, { className: 'w-6 h-6' })}
         </div>
         <h3 className="font-bold text-lg text-white mb-2">{title}</h3>
-        <p className="text-gray-400 text-sm">{description}</p>
+        <p className="text-gray-400 text-sm mb-4">{description}</p>
+        {children && <div className="mt-auto">{children}</div>}
     </div>
 );
 
@@ -81,6 +90,20 @@ const SocialProofLogos: React.FC = () => {
 };
 
 const HomePage: React.FC<HomePageProps> = () => {
+    const platformIcons = [
+        { Icon: FacebookIcon, name: 'Facebook', color: '#1877F2' },
+        { Icon: InstagramIcon, name: 'Instagram', color: '#E4405F' },
+        { Icon: LinkedInIcon, name: 'LinkedIn', color: '#0A66C2' },
+        { Icon: TikTokIcon, name: 'TikTok', color: '#000000' },
+        { Icon: YouTubeIcon, name: 'YouTube', color: '#FF0000' },
+        { Icon: ThreadsIcon, name: 'Threads', color: '#000000' },
+        { Icon: PinterestIcon, name: 'Pinterest', color: '#BD081C' },
+        { Icon: SnapchatIcon, name: 'Snapchat', color: '#FFFC00' },
+        { Icon: SlackIcon, name: 'Slack', color: '#4A154B' },
+        { Icon: MicrosoftTeamsIcon, name: 'Teams', color: '#6264A7' },
+        { Icon: GoogleDriveIcon, name: 'Drive', color: '#1FA463' },
+    ];
+
     return (
         <div className="relative bg-[#0D1117] text-gray-200 font-sans overflow-x-hidden">
             <ParticleNetwork />
@@ -126,8 +149,19 @@ const HomePage: React.FC<HomePageProps> = () => {
                                 <FeatureCard 
                                     icon={<ScheduleIcon />}
                                     title="Multi-Platform Publishing"
-                                    description="Upload your media once, then schedule or publish it across Instagram, Facebook, LinkedIn, and more with a single click."
-                                />
+                                    description="Upload your media once, then schedule or publish it automatically across all your social platforms."
+                                >
+                                    <div className="pt-4 mt-auto border-t border-white/5">
+                                        <h5 className="text-xs font-semibold text-gray-500 mb-3 uppercase tracking-wider">Supported platforms</h5>
+                                        <div className="flex flex-wrap gap-2">
+                                            {platformIcons.map(({ Icon, name, color }) => (
+                                                <div key={name} className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm hover:scale-110 transition-transform duration-200" title={name}>
+                                                    <Icon className="w-5 h-5" style={{ color: color === '#000000' && name !== 'TikTok' && name !== 'Threads' ? '#333' : color }} />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </FeatureCard>
                                 <FeatureCard 
                                     icon={<SparklesIcon />}
                                     title="AI Caption Generator"

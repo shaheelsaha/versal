@@ -2,6 +2,7 @@
 
 
 
+
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
 
@@ -407,5 +408,31 @@ export const DownloadIcon = (props: React.SVGProps<SVGSVGElement>) => (
 export const MicrophoneIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+    </svg>
+);
+
+// --- NEW ICONS FOR SUPPORTED PLATFORMS ROW ---
+
+export const SnapchatIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+      <path d="M12 2.5c-4.14 0-6.19 3.1-6.25 3.19-.14.24-.1.54.1.73.2.19.49.2.73.04.05-.04 1.34-1.12 3.96-1.12 2.72 0 4.19 1.14 4.22 1.16.2.14.47.11.66-.07.18-.18.19-.47.05-.69C15.42 5.67 14.28 2.5 12 2.5zm.06 4.31c-1.07 0-2 .49-2 1.44 0 .84.86 1.42 1.83 1.63.26.06.52.11.79.16 1.05.19 2.05.38 2.05 1.52 0 1.03-.89 1.76-2.18 1.76-.23 0-.47-.02-.7-.05-.76-.09-1.55-.18-2.09.36-.59.59-.44 1.45-.44 1.49.03.37.35.65.73.65.05 0 .11-.01.16-.01.05-.01 1.06-.15 2.34-.15 1.44 0 2.33.4 2.66.55.51.24.84.75.88 1.31.02.26.24.46.5.46.23 0 .43-.17.46-.4.06-.85.5-1.57 1.15-1.92.34-.19 1.23-.62 2.66-.62 1.09 0 1.91.13 1.95.14.07.01.13.02.2.02.37 0 .69-.28.73-.65.01-.04.16-.9-.44-1.49-.55-.54-1.33-.45-2.09-.36-.23.03-.47.05-.7.05-1.29 0-2.18-.73-2.18-1.76 0-1.14 1-1.33 2.05-1.52.26-.05.53-.1.79-.16.97-.21 1.83-.79 1.83-1.63 0-.95-.93-1.44-2-1.44-1.42 0-2.28.79-2.31.81-.19.16-.46.16-.65-.01-.19-.18-.21-.47-.04-.67.14-.15 1.27-1.3 3.06-1.3z" />
+    </svg>
+);
+
+export const SlackIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M5.042 15.165a2.528 2.528 0 1 0 2.528 2.528v-2.528H5.042zm8.407 0v2.528a2.528 2.528 0 1 0 2.528-2.528h-2.528zM8.413 8.413a2.528 2.528 0 1 0-2.528 2.528h2.528V8.413zm2.528 0V5.885a2.528 2.528 0 1 0-2.528 2.528h2.528zM15.98 8.413a2.528 2.528 0 1 0 2.528-2.528v2.528h-2.528zm-5.04 0v-2.528a2.528 2.528 0 1 0-2.528 2.528h2.528zM8.413 15.977a2.528 2.528 0 1 0-2.528-2.528v2.528h2.528zm2.528 0v2.528a2.528 2.528 0 1 0 2.528-2.528h-2.528z"/>
+    </svg>
+);
+
+export const MicrosoftTeamsIcon = (props: React.SVGProps<SVGSVGElement>) => (
+     <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M16.5 7.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm-4.75 3.75h9.5c.69 0 1.25.56 1.25 1.25v5c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-5c0-.69.56-1.25 1.25-1.25zm-9.5-2.5h7.5c.69 0 1.25.56 1.25 1.25v7.5c0 .69-.56 1.25-1.25 1.25h-7.5c-.69 0-1.25-.56-1.25-1.25v-7.5c0-.69.56-1.25 1.25-1.25zm3.75-5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z"/>
+    </svg>
+);
+
+export const GoogleDriveIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M7.71 3.53L1.67 14l5.95 10.31h10.35L24 14l-6.29-10.47H7.71zm1.3 2.14h7.98l4.46 7.43h-8.21L9.01 5.67zM6.55 15.3l-3.32 5.76h6.64l3.32-5.76H6.55zm13.3 0H13.2l3.32 5.76h6.64l-3.31-5.76z" />
     </svg>
 );
