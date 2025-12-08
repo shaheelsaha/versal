@@ -249,7 +249,7 @@ export const ExternalLinkIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 export const PinterestIcon = ({ className, style, ...props }: any) => (
     <img
-        src="https://res.cloudinary.com/ddeaazrgb/image/upload/v1765212577/pinterest-svgrepo-com_dloaxa.svg"
+        src="https://res.cloudinary.com/ddeaazrgb/image/upload/v1765219399/pinterest-svgrepo-com_1_wceh7y.svg"
         alt="Pinterest"
         className={className}
         style={style}
