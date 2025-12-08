@@ -93,8 +93,8 @@ const PLATFORM_DB_CONFIG: {
         fieldsToDelete: ['Thread_Access', 'Threads_ID', 'Threads_name']
     },
     pinterest: {
-        checkField: 'Pinterest_Access_token',
-        fieldsToDelete: ['Pinterest_Access_token', 'Pinterest_ID', 'Pinterest_name', 'Pinterest_refresh_token']
+        checkField: 'Pin_access',
+        fieldsToDelete: ['Pin_access', 'Pin_refresh']
     },
     whatsapp: {
         checkField: 'Whatsapp_Access_token',
