@@ -3,6 +3,7 @@
 
 
 
+
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, UploadIcon, XIcon, TwitterIcon, LinkedInIcon, FileIcon, InstagramIcon, FacebookIcon, TikTokIcon, ThreadsIcon, YouTubeIcon, PlayIcon, EditIcon, TrashIcon, SparklesIcon, CheckCircleIcon, AlertTriangleIcon, PlusIcon, InfoIcon, PinterestIcon } from './icons';
@@ -677,6 +678,7 @@ const Schedule: React.FC = () => {
                 if (data.Insta_ID) connected.push(SocialPlatform.INSTAGRAM);
                 if (data.LinkedIn_Access_token) connected.push(SocialPlatform.LINKEDIN);
                 if (data.Thread_Access) connected.push(SocialPlatform.THREADS);
+                if (data.Pin_access) connected.push(SocialPlatform.PINTEREST);
             }
             setConnectedPlatforms(connected);
         });
