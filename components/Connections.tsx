@@ -14,10 +14,11 @@ import {
     TrashIcon,
     ExternalLinkIcon,
     WhatsAppIcon,
-    GmailIcon
+    GmailIcon,
+    PinterestIcon
 } from './icons';
 
-type SocialPlatformKey = 'meta' | 'instagram' | 'linkedin' | 'youtube' | 'tiktok' | 'threads' | 'whatsapp' | 'gmail';
+type SocialPlatformKey = 'meta' | 'instagram' | 'linkedin' | 'youtube' | 'tiktok' | 'threads' | 'whatsapp' | 'gmail' | 'pinterest';
 
 const platforms: {
     id: SocialPlatformKey;
@@ -33,6 +34,7 @@ const platforms: {
     { id: 'youtube', name: 'YouTube Channel', description: 'Schedule and publish videos.', icon: YouTubeIcon, color: '#FF0000', iconColorClass: 'text-white' },
     { id: 'tiktok', name: 'TikTok', description: 'Share short-form videos.', icon: TikTokIcon, color: '#000000', iconColorClass: 'text-white' },
     { id: 'threads', name: 'Threads', description: 'Share text updates and join conversations.', icon: ThreadsIcon, color: '#000000', iconColorClass: 'text-white' },
+    { id: 'pinterest', name: 'Pinterest', description: 'Publish pins and boards.', icon: PinterestIcon, color: '#E60023', iconColorClass: 'text-white' },
     { id: 'whatsapp', name: 'WhatsApp', description: 'Connect for automated messaging.', icon: WhatsAppIcon, color: '#25D366', iconColorClass: 'text-white' },
     { id: 'gmail', name: 'Gmail', description: 'Connect for automated email follow-ups.', icon: GmailIcon, color: '#EA4335', iconColorClass: 'text-white' },
 ];
@@ -56,6 +58,12 @@ const OAUTH_CONFIG: { [key in SocialPlatformKey]?: { url: string, clientId: stri
         clientId: '1892572211603273',
         redirectUri: 'https://n8n.sahaai.online/webhook/facebook-login',
         scope: 'threads_basic,threads_content_publish,threads_keyword_search,threads_manage_mentions,threads_manage_replies,threads_read_replies'
+    },
+    pinterest: {
+        url: 'https://www.pinterest.com/oauth/',
+        clientId: '1539285',
+        redirectUri: 'https://n8n.sahaai.online/webhook/Pinterest',
+        scope: 'boards:read,boards:write,pins:read,pins:write,boards:read_secret'
     },
     gmail: {
         url: 'https://accounts.google.com/o/oauth2/v2/auth',
@@ -83,6 +91,10 @@ const PLATFORM_DB_CONFIG: {
     threads: { 
         checkField: 'Thread_Access',
         fieldsToDelete: ['Thread_Access', 'Threads_ID', 'Threads_name']
+    },
+    pinterest: {
+        checkField: 'Pinterest_Access_token',
+        fieldsToDelete: ['Pinterest_Access_token', 'Pinterest_ID', 'Pinterest_name', 'Pinterest_refresh_token']
     },
     whatsapp: {
         checkField: 'Whatsapp_Access_token',
