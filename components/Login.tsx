@@ -192,6 +192,17 @@ const Login: React.FC<LoginProps> = () => {
                             Sign Up
                         </Link>
                     </p>
+
+                    <p className="text-xs text-center text-gray-500 mt-4 max-w-xs mx-auto">
+                        By continuing, you accept our{' '}
+                        <Link to="/terms" className="underline hover:text-[#00FFC2] transition-colors">
+                            Terms of Service
+                        </Link>{' '}
+                        and acknowledge receipt of the{' '}
+                        <Link to="/privacy" className="underline hover:text-[#00FFC2] transition-colors">
+                            Privacy Policy
+                        </Link>.
+                    </p>
                 </div>
                 <p className="text-center text-xs text-gray-500 mt-12">
                     Copyright © 2025 SAHA AI. All Rights Reserved.
