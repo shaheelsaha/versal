@@ -47,6 +47,13 @@ const OAUTH_CONFIG: { [key in SocialPlatformKey]?: { url: string, clientId: stri
         redirectUri: 'https://n8n.sahaai.online/webhook/facebook-login',
         scope: 'email,read_insights,publish_video,threads_business_basic,pages_show_list,ads_management,ads_read,business_management,pages_messaging,instagram_basic,instagram_manage_comments,instagram_manage_insights,instagram_content_publish,whatsapp_business_management,instagram_manage_messages,pages_read_engagement,pages_manage_metadata,pages_read_user_content,pages_manage_posts,pages_manage_engagement,whatsapp_business_messaging,instagram_branded_content_brand,instagram_branded_content_creator,instagram_branded_content_ads_brand,instagram_manage_upcoming_events,pages_utility_messaging,whatsapp_business_manage_events,public_profile'
     },
+    instagram: {
+        // Instagram uses the same Meta (Facebook) login flow
+        url: 'https://www.facebook.com/v24.0/dialog/oauth',
+        clientId: '1743080133238177',
+        redirectUri: 'https://n8n.sahaai.online/webhook/facebook-login',
+        scope: 'email,read_insights,publish_video,threads_business_basic,pages_show_list,ads_management,ads_read,business_management,pages_messaging,instagram_basic,instagram_manage_comments,instagram_manage_insights,instagram_content_publish,whatsapp_business_management,instagram_manage_messages,pages_read_engagement,pages_manage_metadata,pages_read_user_content,pages_manage_posts,pages_manage_engagement,whatsapp_business_messaging,instagram_branded_content_brand,instagram_branded_content_creator,instagram_branded_content_ads_brand,instagram_manage_upcoming_events,pages_utility_messaging,whatsapp_business_manage_events,public_profile'
+    },
     linkedin: {
         url: 'https://www.linkedin.com/oauth/v2/authorization',
         clientId: '86sjtmizfmhbof',
@@ -84,6 +91,10 @@ const PLATFORM_DB_CONFIG: {
         checkField: 'Fb_ID', 
         fieldsToDelete: ['Fb_Access', 'Fb_ID', 'Fb_name', 'Insta_ID', 'Insta_name']
     },
+    instagram: {
+        checkField: 'Insta_ID',
+        fieldsToDelete: ['Insta_ID', 'Insta_name']
+    },
     linkedin: { 
         checkField: 'LinkedIn_Access_token',
         fieldsToDelete: ['LinkedIn_Access_token', 'LinkedIn_refresh_token', 'Linkedin_ID', 'Linkedin_name']
@@ -109,6 +120,7 @@ const PLATFORM_DB_CONFIG: {
 export const Connections: React.FC = () => {
     const [connectedPlatforms, setConnectedPlatforms] = React.useState<string[]>([]);
     const [metaPageName, setMetaPageName] = React.useState<string | null>(null);
+    const [instaPageName, setInstaPageName] = React.useState<string | null>(null);
     const [loading, setLoading] = React.useState(true);
     const [connectingPlatform, setConnectingPlatform] = React.useState<SocialPlatformKey | null>(null);
     const pollIntervalRef = React.useRef<number | null>(null);
@@ -125,21 +137,24 @@ export const Connections: React.FC = () => {
         const unsubscribe = docRef.onSnapshot(doc => {
             if (doc.exists) {
                 const data = doc.data()!;
-                const connected = Object.keys(PLATFORM_DB_CONFIG).filter(platformKey => {
+                const connected: string[] = [];
+
+                Object.keys(PLATFORM_DB_CONFIG).forEach(platformKey => {
                     const config = PLATFORM_DB_CONFIG[platformKey as SocialPlatformKey];
-                    return config && data[config.checkField];
+                    if (config && data[config.checkField]) {
+                        connected.push(platformKey);
+                    }
                 });
+
                 setConnectedPlatforms(connected);
                 
-                // Handle specific state updates if needed
-                if (data.Fb_ID) {
-                    setMetaPageName(data.Fb_name || null);
-                } else {
-                    setMetaPageName(null);
-                }
+                // Update names
+                setMetaPageName(data.Fb_name || null);
+                setInstaPageName(data.Insta_name || null);
             } else {
                 setConnectedPlatforms([]);
                 setMetaPageName(null);
+                setInstaPageName(null);
             }
             setLoading(false);
         }, err => {
@@ -235,7 +250,8 @@ export const Connections: React.FC = () => {
                         const isConnectedNow = doc.exists && config && doc.data()?.[config.checkField];
                         
                         if (connectingPlatform && !isConnectedNow) {
-                             alert(`The ${connectingPlatform} connection attempt failed or was cancelled. If you saw an error message in the popup, it indicates a problem with the account authorization. Please try again, and if the issue persists, contact support.`);
+                             // Only alert if we think it failed
+                             alert(`The ${connectingPlatform} connection attempt failed or was cancelled. If you saw an error message in the popup, it indicates a problem with the account authorization. Please try again.`);
                         }
                         
                         setConnectingPlatform(null);
@@ -251,7 +267,17 @@ export const Connections: React.FC = () => {
     
     const handleDisconnect = async (platformId: SocialPlatformKey) => {
         const platformName = platforms.find(p => p.id === platformId)?.name || 'this platform';
-        if (!window.confirm(`Are you sure you want to disconnect ${platformName}?`)) {
+        const isMeta = platformId === 'meta';
+        const isInsta = platformId === 'instagram';
+        
+        let confirmMsg = `Are you sure you want to disconnect ${platformName}?`;
+        if (isMeta) {
+            confirmMsg += " This will also disconnect your Instagram account.";
+        } else if (isInsta) {
+             confirmMsg += " This will only disconnect your Instagram account.";
+        }
+
+        if (!window.confirm(confirmMsg)) {
             return;
         }
     
@@ -303,6 +329,9 @@ export const Connections: React.FC = () => {
 
             if (platformId === 'meta') {
                 setMetaPageName(null);
+                setInstaPageName(null);
+            } else if (platformId === 'instagram') {
+                setInstaPageName(null);
             }
             
         } catch (error) {
@@ -327,6 +356,13 @@ export const Connections: React.FC = () => {
                         const isConnecting = connectingPlatform === platform.id;
                         const Icon = platform.icon;
                         
+                        let displayDescription = platform.description;
+                        if (platform.id === 'meta' && metaPageName) {
+                            displayDescription = `Connected to: ${metaPageName}`;
+                        } else if (platform.id === 'instagram' && instaPageName) {
+                            displayDescription = `Connected to: ${instaPageName}`;
+                        }
+
                         return (
                             <div 
                                 key={platform.id} 
@@ -346,7 +382,9 @@ export const Connections: React.FC = () => {
                                 
                                 <div className="mt-4">
                                     <h3 className="font-bold text-lg text-white">{platform.name}</h3>
-                                    <p className="text-sm text-gray-400 mt-1 h-10">{platform.description}</p>
+                                    <p className={`text-sm mt-1 h-10 ${isConnected && (platform.id === 'meta' || platform.id === 'instagram') ? 'text-teal-300 font-medium' : 'text-gray-400'}`}>
+                                        {displayDescription}
+                                    </p>
                                 </div>
     
                                 <div className="mt-6 flex items-center space-x-2">
