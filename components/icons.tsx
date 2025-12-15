@@ -1,3 +1,4 @@
+
 // FIX: Switched to namespace import for React to resolve JSX intrinsic element errors, which is necessary for this project's TypeScript configuration.
 import * as React from 'react';
 
@@ -301,10 +302,14 @@ export const CommandLineIcon = (props: React.SVGProps<SVGSVGElement>) => (
     </svg>
 );
 
-export const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
-        <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.79.46 3.48 1.29 4.94L2 22l5.3-1.38c1.39.79 3.02 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zM7.18 6.55c.18-.32.36-.35.53-.35h.41c.17 0 .42.03.62.43.2.39.71 1.72.71 1.84s.01.17-.08.26c-.09.09-.2.2-.33.32-.13.12-.25.17-.38.28-.13.11-.25.21-.12.41.13.2.63.88 1.27 1.48.81.79 1.46 1.04 1.66 1.13.2.09.32.08.44-.04.12-.12.52-.61.66-.81.14-.2.28-.16.48-.08.2.08 1.25.59 1.46.7.21.11.36.16.41.25.05.09.05.52-.16 1s-1.16.98-1.52 1.03c-.36.05-.76.11-1.28-.05-.52-.16-2.22-.8-4.23-2.58C5.23 13.51 4 12.06 4 10.52c0-.52.37-1 .54-1.22.17-.22.36-.28.48-.28h.42c.12 0 .28.02.43.32z" />
-    </svg>
+export const WhatsAppIcon = ({ className, style, ...props }: any) => (
+    <img
+        src="https://res.cloudinary.com/ddeaazrgb/image/upload/v1765825431/whatsapp-svgrepo-com_fqufsf.svg"
+        alt="WhatsApp"
+        className={className}
+        style={style}
+        {...props}
+    />
 );
 
 export const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
