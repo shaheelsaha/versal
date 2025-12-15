@@ -77,6 +77,12 @@ const OAUTH_CONFIG: { [key in SocialPlatformKey]?: { url: string, clientId: stri
         clientId: '846565674927-4k2l198f1t11b5853r22q8c4c7c8c7c.apps.googleusercontent.com',
         redirectUri: 'https://n8n.sahaai.online/webhook/facebook-login',
         scope: 'https://www.googleapis.com/auth/gmail.send'
+    },
+    whatsapp: {
+        url: 'https://business.facebook.com/messaging/whatsapp/onboard/?app_id=1743080133238177&config_id=1629519901411120&extras=%7B%22sessionInfoVersion%22%3A%223%22%2C%22version%22%3A%22v3%22%7D',
+        clientId: '', // Not used for this flow
+        redirectUri: '', // Not used for this flow
+        scope: '' // Not used for this flow
     }
 };
 
@@ -201,21 +207,28 @@ export const Connections: React.FC = () => {
         setConnectingPlatform(platformId);
         
         const safeUserId = encodeURIComponent(user.uid);
-        const params = new URLSearchParams({
-            response_type: 'code',
-            client_id: config.clientId,
-            redirect_uri: config.redirectUri,
-            scope: config.scope,
-            state: safeUserId,
-        });
-        
-        // Add access_type=offline for Google services to request a refresh token
-        if (platformId === 'gmail') {
-            params.append('access_type', 'offline');
-            params.append('prompt', 'consent');
-        }
+        let oauthUrl = '';
 
-        const oauthUrl = `${config.url}?${params.toString()}`;
+        if (platformId === 'whatsapp') {
+            // Use the specific WhatsApp onboarding URL directly, appending state for tracking if possible
+            oauthUrl = `${config.url}&state=${safeUserId}`;
+        } else {
+            const params = new URLSearchParams({
+                response_type: 'code',
+                client_id: config.clientId,
+                redirect_uri: config.redirectUri,
+                scope: config.scope,
+                state: safeUserId,
+            });
+            
+            // Add access_type=offline for Google services to request a refresh token
+            if (platformId === 'gmail') {
+                params.append('access_type', 'offline');
+                params.append('prompt', 'consent');
+            }
+
+            oauthUrl = `${config.url}?${params.toString()}`;
+        }
         
         const popup = window.open(oauthUrl, `${platformId}-auth-popup`, 'width=600,height=700');
 
