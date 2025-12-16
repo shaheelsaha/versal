@@ -176,6 +176,39 @@ export const Connections: React.FC = () => {
         };
     }, []);
 
+    // Listen for WhatsApp Embedded Signup messages
+    React.useEffect(() => {
+        const handleMessage = (event: MessageEvent) => {
+            if (event.origin !== "https://www.facebook.com" && event.origin !== "https://web.facebook.com") {
+                return;
+            }
+            
+            try {
+                const data = JSON.parse(event.data);
+                if (data.type === 'WA_EMBEDDED_SIGNUP') {
+                    console.log('WhatsApp Signup Event:', data);
+                    
+                    const user = auth.currentUser;
+                    if (data.event === 'FINISH' && user) {
+                        const { code } = data.data;
+                        // Send code to backend to exchange for token
+                        // Assuming the backend endpoint for this exchange
+                        fetch('https://n8n.sahaai.online/webhook/whatsapp-signup', { 
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ code, userId: user.uid })
+                        }).catch(err => console.error("Failed to send WhatsApp code to backend", err));
+                    }
+                }
+            } catch (e) {
+                // Ignore non-JSON messages
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, []);
+
     React.useEffect(() => {
         // This effect handles the SUCCESS case for connection.
         // When the platform appears as connected, we stop the loading state.
